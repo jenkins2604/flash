@@ -1,0 +1,35 @@
+This document provides guide line of how to build the edit_boot_script tool and to prepare the local machine and target hardware.
+A. Prepare the target hardware, write boot configuration:
+   These steps ONLY needed to be done ONCE to disable flashing by eMMC on Secure Fuse Controller and enable flashing by eMMC on back up register BUREG0.
+Make sure that boot config in fuse is burn correctly:
+    - Change the hardware into binary mode ( by short and then unshort jumper J9 for sama5d2-xplained, or plug out SDCARD then plug in again for sama5d27-wlsom1-ek)
+    - Burn fuse:
+      $ ./sam-ba -p usb -d sama5d2 -a bootconfig -c writecfg:fuse:QSPI0_IOSET1,QSPI1_IOSET1,SPI0_IOSET1,SPI1_IOSET1,NFC_IOSET1,SDMMC0_DISABLED,SDMMC1_DISABLED,UART1_IOSET1,JTAG_IOSET1
+      $ ./sam-ba -p usb -d sama5d2 -a bootconfig -c writecfg:bscr:valid,bureg0 -c writecfg:bureg0:QSPI0_IOSET1,QSPI1_IOSET1,SPI0_IOSET1,SPI1_IOSET1,NFC_IOSET1,SDMMC0,SDMMC1,UART1_IOSET1,JTAG_IOSET1
+
+      $ ./sam-ba -p usb -d sama5d2 -a bootconfig -c readcfg:bscr -c readcfg:bureg0 
+
+      $ ./sam-ba -p usb -d sama5d2 -a reset
+    - Make sure the hardware boot correctly (blue LED blink on devkits) 
+      
+B. Prepare the local machine to build exe file and copy to target hardware:
+    1. Download SAM-BA https://www.microchip.com/en-us/development-tool/SAM-BA-In-system-Programmer
+    2. Extract it into the same dir as bash file sama5d2_flash.
+    3. Install sdk to build code on target harware:
+       - Download the last built SDK from Jenkins (5-10 min over VPN)
+         $ wget http://sevikci01.creatorctek.local:8080/job/oe-sdk/job/master/lastSuccessfulBuild/artifact/deploy-gm-ccu/cschargeos-gui-glibc-x86_64-gm-ccu-image-cortexa5t2hf-neon-toolchain-4.1.sh
+       - Run it
+         $ chmod +x cschargeos-gui-glibc-x86_64-gm-ccu-image-cortexa5t2hf-neon-toolchain-4.1.sh
+         $ ./cschargeos-gui-glibc-x86_64-gm-ccu-image-cortexa5t2hf-neon-toolchain-4.1.sh
+       - Make the terminal ready for SDK build
+         $ source /usr/local/oecore-x86_64/environment-setup-cortexa5t2hf-neon-oe-linux-gnueabi
+             
+    4. Build exe file:
+       $ $CC SAMA5D2_edit_boot.c -o SAMA5D2_binary_mode
+    5. Copy builded file to target hardware:
+       sshpass -p "root" scp -oHostKeyAlgorithms=+ssh-rsa SAMA5D2_binary_mode root@192.168.7.2:/mnt/data/etc
+
+C. Command to Flash on target hardware:
+   - Run bash cript sama5d2_flash:
+       Example for flashing <image file> to sama5d27-wlsom1-ek:
+       $ bash sama5d2_flash sama5d27-wlsom1-ek <path to image file>

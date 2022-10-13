@@ -1,0 +1,4 @@
+Opening serial port 'ttyACM0'
+Connection opened.
+/home/thoang@creatorctek.local/integration-tests/tools/sam-ba_v3.7-linux_x86_64/qml/SAMBA/Applet/SDMMCApplet.qml:33: Error: Incomplete SD/MMC configuration, missing value for 'instance' property
+Connection closed.
