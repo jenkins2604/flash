@@ -1,0 +1,34 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('build') {
+            steps {
+                git branch: 'main', credentialsId: 'ac9b57cf-56f7-4bf4-85a8-6648de2c87fd', url: 'https://github.com/Quincy0110/chichi.git'
+                sh "./build01.sh"
+            }
+        }
+        stage('deploy') {
+            steps {
+                sh "./deploy.sh"
+            }
+        }
+        stage('test analysis') {
+            steps {
+                echo "analysing"
+            }
+        }
+        stage('test debug') {
+            steps {
+                junit 'test_reports/*.xml'
+            }
+        }
+        stage('test release') {
+            steps {
+                echo "release"
+            }
+        }
+
+    }
+    
+}

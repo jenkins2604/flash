@@ -1,0 +1,19 @@
+<?xml version="1.0" ?>
+<testsuites disabled="0" errors="0" failures="1" tests="12" time="0.0">
+	<testsuite disabled="0" errors="0" failures="1" name="test-results.xml" skipped="0" tests="12" time="0">
+		<testcase name="version">
+			<failure type="failure" message="Did not find pattern &quot;CHI&quot; rc=-1"/>
+		</testcase>
+		<testcase name="function-test-1"/>
+		<testcase name="function-test-2"/>
+		<testcase name="function-test-3"/>
+		<testcase name="function-test-4"/>
+		<testcase name="function-test-5"/>
+		<testcase name="function-test-6"/>
+		<testcase name="function-test-7"/>
+		<testcase name="function-test-8"/>
+		<testcase name="function-test-9"/>
+		<testcase name="function-test-10"/>
+		<testcase name="function-test-11"/>
+	</testsuite>
+</testsuites>
