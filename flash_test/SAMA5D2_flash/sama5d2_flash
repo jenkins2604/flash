@@ -1,0 +1,23 @@
+#!/bin/bash
+
+if [[ $# -ne 2 ]]; then
+    echo "Wrong input. Usage: { Device name } { Image File path }"
+    echo "Device name: sam9x60-ek, sam9x75-ddr3-eb, sam9xx5-ek, sama5d2-icp, sama5d2-ptc-ek, sama5d2-xplained, sama5d27-som1, sama5d27-som1-ek, sama5d27-wlsom1-ek, sama5d3-ek, sama5d3-xplained, sama5d4-ek, sama5d4-xplained, sama7g5-ek"
+    exit 1
+fi
+echo "Preparing ... "
+sshpass -p root ssh -o ConnectTimeout=5 -o HostKeyAlgorithms\ ssh-rsa root@192.168.7.2 '/mnt/data/etc/flash/SAMA5D2_binary_mode;/sbin/reboot' & sleep 15
+#timeout 15 ping 192.168.7.2 > /dev/null
+echo "start flashing $1..."
+if ../tools/sam-ba_v3.7-linux_x86_64/sam-ba -p serial -b $1 -a sdmmc -c write:$2 | grep -q 'Error\|error'; then
+    echo "Err: Check connection or input and try again"
+    exit 1
+fi
+
+echo "start Booting ..."
+
+../tools/sam-ba_v3.7-linux_x86_64/sam-ba -p usb -d sama5d2 -a bootconfig -c writecfg:bscr:valid,bureg0 -c writecfg:bureg0:QSPI0_IOSET1,QSPI1_IOSET1,SPI0_IOSET1,SPI1_IOSET1,NFC_IOSET1,SDMMC0,SDMMC1,UART1_IOSET1,JTAG_IOSET1
+
+../tools/sam-ba_v3.7-linux_x86_64/sam-ba -p usb -d sama5d2 -a bootconfig -c readcfg:bscr -c readcfg:bureg0 
+
+../tools/sam-ba_v3.7-linux_x86_64/sam-ba -p usb -d sama5d2 -a reset
