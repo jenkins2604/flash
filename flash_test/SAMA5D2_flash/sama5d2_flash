@@ -6,7 +6,8 @@ if [[ $# -ne 2 ]]; then
     exit 1
 fi
 echo "Preparing ... "
-sshpass -p root ssh -o ConnectTimeout=5 -o HostKeyAlgorithms\ ssh-rsa root@192.168.7.2 '/mnt/data/etc/flash/SAMA5D2_binary_mode;/sbin/reboot' & sleep 15
+sshpass -p root scp -o ConnectTimeout=5 -oHostKeyAlgorithms=+ssh-rsa SAMA5D2_binary_mode root@192.168.7.2:/mnt/data/etc
+sshpass -p root ssh -o ConnectTimeout=5 -o HostKeyAlgorithms\ ssh-rsa root@192.168.7.2 '/mnt/data/etc/SAMA5D2_binary_mode;/sbin/reboot' & sleep 10
 #timeout 15 ping 192.168.7.2 > /dev/null
 echo "start flashing $1..."
 if ../tools/sam-ba_v3.7-linux_x86_64/sam-ba -p serial -b $1 -a sdmmc -c write:$2 | grep -q 'Error\|error'; then

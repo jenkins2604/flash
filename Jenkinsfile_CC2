@@ -1,19 +1,15 @@
 
 pipeline {
-    agent {label 'sama5d2-test-node'}
+    agent any
     stages {
-    	stage('Delete_b') {
-            steps {
-                deleteDir()
-            }
-        }
+    	
         stage('Check out artifact') {
             steps {
                 sh '''
                 cleanWs()
-                cd flash_test/SAMA5D2_flash
-                rm -rf *.wic*
-                wget http://sevikci01.creatorctek.local:8080/job/oe-build/job/master/lastSuccessfulBuild/artifact/deploy-sama5d27-wlsom1-ek/gm-ccu-dev-image-sama5d27-wlsom1-ek-sd.wic
+                cd CC2
+                rm -rf *.bin*
+                wget http://sevikci01.creatorctek.local:8080/job/oe-build/job/master/lastSuccessfulBuild/artifact/deploy-ccu/upgrade-ccu-dev.bin
                 '''
             }
         }
@@ -21,9 +17,7 @@ pipeline {
             steps {
             	echo 'deploy'
                 sh '''
-                echo $USERNAME
-                cd flash_test/SAMA5D2_flash
-                bash sama5d2_flash sama5d27-wlsom1-ek gm-ccu-dev-image-sama5d27-wlsom1-ek-sd.wic
+                
                 '''
             }
         }
