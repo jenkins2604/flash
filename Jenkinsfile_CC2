@@ -3,6 +3,7 @@ pipeline {
     stages {
         stage('Check out artifact') {
             steps {
+                echo 'Checkout'
                 /*sh '''
                 cd CC2
                 rm -rf *.bin*
