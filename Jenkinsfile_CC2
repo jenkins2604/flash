@@ -6,24 +6,27 @@ pipeline {
         stage('Check out artifact') {
             steps {
                 sh '''
-                cleanWs()
                 cd CC2
-                rm -rf *.bin*
                 wget http://sevikci01.creatorctek.local:8080/job/oe-build/job/master/lastSuccessfulBuild/artifact/deploy-ccu/upgrade-ccu-dev.bin
                 '''
             }
         }
         stage('deploy') {
             steps {
-            	echo 'deploy'
-                sh '''
-                pip3 install ocpp
-                curl 'http://192.168.1.100/current_state.json?pw=admin&Relay4=1'
-                sleep 10s
-                cd CC2
-                python3 CentralSystem.py
-                sleep 20s
-                '''
+                parallel(
+                  a: {
+		    echo 'deploy'
+		    sh '''
+		    curl 'http://192.168.1.100/current_state.json?pw=admin&Relay4=1'
+		    sleep 10s
+		    cd CC2
+		    python3 -m http.server 8000 &
+		    '''
+		  }
+		  b: {
+		    echo 'parallel'
+		  }
+		)
             }
         }
         stage('Run') {
@@ -34,23 +37,10 @@ pipeline {
                 '''
             }
         }
-        stage('Delete') {
-            steps {
-                deleteDir()
-            }
-        }
     }
     post {
         success { gerritReview score:1 }
         unstable { gerritReview score:0 }
         failure { gerritReview score:-1 }
-        always {
-            cleanWs(cleanWhenNotBuilt: false,
-                    deleteDirs: true,
-                    disableDeferredWipeout: true,
-                    notFailBuild: true,
-                    patterns: [[pattern: '.gitignore', type: 'INCLUDE'],
-                               [pattern: '.propsfile', type: 'EXCLUDE']])
-        }
     }
 }
