@@ -1,5 +1,5 @@
 pipeline {
-    agent any
+    agent 'pi'
     stages {
         stage('Check out artifact') {
             steps {
