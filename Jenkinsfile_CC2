@@ -19,38 +19,50 @@ pipeline {
         }
         stage('deploy') {
             steps {
-                parallel(
-                    a: {
-                        echo 'deploy'
-                        timeout(time: 1000, unit: 'SECONDS') {
-                        sh '''
-                        #!/bin/bash
+
+                    echo 'deploy'
+                    timeout(time: 1000, unit: 'SECONDS') {
+                    sh '''
                         cd CC2
-                        #curl 'http://192.168.17.123/current_state.json?pw=admin&Relay7=1'
+                        
                         python3 -m http.server 8000 &
                         echo Update | nc -w 10 localhost 8001
-                        cp /home/testcc2/project/OcppSIM/testcase.json .
-                        #ut = $(jq -r '.updatestatus' testcase.json)
-                        #echo $ut
-                        while [ $(jq -r '.updatestatus' testcase.json) != "Installed" ]
-                        do
-                            if [ $(jq -r '.updatestatus' testcase.json) == "DownloadFailed" ] || [ $(jq -r '.updatestatus' testcase.json) == "InstallationFailed" ]
-                            then
-                                echo "failed update"
-                                exit 1
-                            fi
-
-                            continue
-                        done
-                        
-                        '''
-                        }
-                    },
-                    b: {
-                        echo 'parallel'
-                        
+                    '''
                     }
-                )
+                    }
+            }
+        }
+        stage('Test firmware update') {
+            steps {
+                sh '''
+                    cp /home/testcc2/project/OcppSIM/testcase.json .
+                    ut = $(jq -r '.updatestatus' testcase.json)
+                    echo $ut
+                    while [ $(jq -r '.updatestatus' testcase.json) != "Installed" ]
+                    do
+                        if [ $(jq -r '.updatestatus' testcase.json) == "DownloadFailed" ] || [ $(jq -r '.updatestatus' testcase.json) == "InstallationFailed" ]
+                        then
+                            echo "failed update"
+                            exit 1
+                        fi
+
+                        continue
+                    done
+                '''
+            }
+        }
+        stage('Test start charging'){
+            steps {
+                echo "test"
+                sh '''
+                    curl 'http://192.168.17.123/current_state.json?pw=admin&Relay7=1'
+                    if [ $(jq -r '.ntstatus[1]' testcase.json) != "Charging" ] ; then
+                        exit 1
+                    fi
+                    if [ $(jq -r '.ntstatus[2]' testcase.json) != "SuspendedEV" ] ; then
+                        exit 1
+                    fi
+                '''
             }
         }
         stage('Run') {
