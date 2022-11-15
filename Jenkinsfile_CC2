@@ -21,16 +21,15 @@ pipeline {
             steps {
 
                     echo 'deploy'
-                    timeout(time: 1000, unit: 'SECONDS') {
-                    sh '''
-                        cd CC2
-                        
-                        python3 -m http.server 8000 &
-                        echo Update | nc -w 10 localhost 8001
-                    '''
+                        timeout(time: 1000, unit: 'SECONDS') {
+                        sh '''
+                            cd CC2
+                            
+                            python3 -m http.server 8000 &
+                            echo Update | nc -w 10 localhost 8001
+                        '''
+                        }
                     }
-                    }
-            }
         }
         stage('Test firmware update') {
             steps {
