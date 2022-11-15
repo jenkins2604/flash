@@ -30,7 +30,7 @@ pipeline {
                         python3 -m http.server 8000 &
                         echo Update | nc -w 10 localhost 8001
                         cp /home/testcc2/project/OcppSIM/testcase.json .
-                        ut = $(jq -r '.updatestatus' testcase.json)
+                        
                         echo "aaaa"
                         while [[ $(jq -r '.updatestatus' testcase.json) != 'Installed' ]]
                         do
