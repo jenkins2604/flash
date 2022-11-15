@@ -22,21 +22,32 @@ pipeline {
                 parallel(
                     a: {
                         echo 'deploy'
+                        timeout(time: 1000, unit: 'SECONDS') {
                         sh '''
                         cd CC2
                         curl 'http://192.168.17.123/current_state.json?pw=admin&Relay4=1'
                         python3 -m http.server 8000 &
                         #echo Update | nc -w 10 localhost 8001
+                        cp /home/testcc2/project/OcppSIM/testcase.json .
+                        cat testcase.json
+                        def props = readJSON file: 'testcase.json'
+                        echo $props['updateStatus']
+                        while [props['updateStatus'] != 'Installed'] :
+                            do
+                                if [props['updateStatus'] != 'DownloadFailed'] || [props['updateStatus'] != 'InstallationFailed']
+                                then
+                                    exit 1
+                                fi
+
+                                continue
+                        done
+                        
                         '''
+                        }
                     },
                     b: {
                         echo 'parallel'
-                        sh '''
-                        cd CC2
-                        echo TriggerMessage StatusNotification | nc -w 10 localhost 8001
-                        cp /home/testcc2/project/OcppSIM/testcase.json .
-                        cat testcase.json
-                        '''
+                        
                     }
                 )
             }
