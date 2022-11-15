@@ -26,11 +26,17 @@ pipeline {
                         cd CC2
                         curl 'http://192.168.17.123/current_state.json?pw=admin&Relay4=1'
                         python3 -m http.server 8000 &
-                        echo Update | nc -w 10 localhost 8001
+                        #echo Update | nc -w 10 localhost 8001
                         '''
                     },
                     b: {
                         echo 'parallel'
+                        sh '''
+                        cd CC2
+                        echo TriggerMessage StatusNotification | nc -w 10 localhost 8001
+                        cp /home/testcc2/project/OcppSIM/testcase.json .
+                        cat testcase.json
+                        '''
                     }
                 )
             }
@@ -39,7 +45,7 @@ pipeline {
             steps {
                 echo 'RUN'
                 sh '''
-                sleep 10s
+                sleep 300s
                 echo TriggerMessage StatusNotification | nc -w 10 localhost 8001
                 '''
             }
