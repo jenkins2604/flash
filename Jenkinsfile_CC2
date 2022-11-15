@@ -30,7 +30,9 @@ pipeline {
                         #echo Update | nc -w 10 localhost 8001
                         cp /home/testcc2/project/OcppSIM/testcase.json .
                         cat testcase.json
+                        '''
                         def props = readJSON file: 'testcase.json'
+                        sh '''
                         echo $props['updateStatus']
                         while [props['updateStatus'] != 'Installed'] :
                             do
