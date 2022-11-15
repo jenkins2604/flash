@@ -32,12 +32,9 @@ pipeline {
                         cp /home/testcc2/project/OcppSIM/testcase.json .
                         ut = $(jq -r '.updatestatus' testcase.json)
                         echo $ut
-                        while [[ $ut != 'Installed' ]]
+                        while [[ "$ut" != 'Installed' ]]
                         do
-                            if [[ $ut == 'DownloadFailed' ]] || [[ $ut == 'InstallationFailed' ]]
-                            then
-                                exit 1
-                            fi
+                            
 
                             continue
                         done
