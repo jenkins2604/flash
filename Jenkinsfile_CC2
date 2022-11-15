@@ -32,7 +32,7 @@ pipeline {
                         cp /home/testcc2/project/OcppSIM/testcase.json .
                         ut = $(jq -r '.updatestatus' testcase.json)
                         echo $ut
-                        while [[ "$ut" != 'Installed' ]]
+                        while [[ $(jq -r '.updatestatus' testcase.json) != 'Installed' ]]
                         do
                             
 
