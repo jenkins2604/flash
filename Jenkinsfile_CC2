@@ -30,11 +30,14 @@ pipeline {
                         python3 -m http.server 8000 &
                         echo Update | nc -w 10 localhost 8001
                         cp /home/testcc2/project/OcppSIM/testcase.json .
-                        
-                        echo "aaaa"
-                        while [[ $(jq -r '.updatestatus' testcase.json) != 'Installed' ]]
+                        #ut = $(jq -r '.updatestatus' testcase.json)
+                        #echo $ut
+                        while [ $(jq -r '.updatestatus' testcase.json) != 'Installed' ]
                         do
-                            
+                            if [ $(jq -r '.updatestatus' testcase.json) == 'DownloadFailed' ] || [ $(jq -r '.updatestatus' testcase.json) == 'InstallationFailed' ]
+                            then
+                                exit 1
+                            fi
 
                             continue
                         done
