@@ -34,7 +34,7 @@ pipeline {
                         #echo $ut
                         while [ $(jq -r '.updatestatus' testcase.json) != "Installed" ]
                         do
-                            if [ $(jq -r .updatestatus' testcase.json) == "DownloadFailed" ] || [ $(jq -r '.updatestatus' testcase.json) == "InstallationFailed" ]
+                            if [ $(jq -r '.updatestatus' testcase.json) == "DownloadFailed" ] || [ $(jq -r '.updatestatus' testcase.json) == "InstallationFailed" ]
                             then
                                 echo "failed update"
                                 exit 1
