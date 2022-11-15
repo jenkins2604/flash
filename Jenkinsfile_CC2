@@ -33,11 +33,12 @@ pipeline {
         }
         stage('Test firmware update') {
             steps {
-                sh '''
+                sh '''#!/usr/bin/env bash
+                    
                     cp /home/testcc2/project/OcppSIM/testcase.json .
-                    ut = $(jq -r '.updatestatus' testcase.json)
+                    ut=$(jq -r '.updatestatus' testcase.json)
                     echo $ut
-                    while [ $(jq -r '.updatestatus' testcase.json) != "Installed" ]
+                    while [ $ut != "Installed" ]
                     do
                         if [ $(jq -r '.updatestatus' testcase.json) == "DownloadFailed" ] || [ $(jq -r '.updatestatus' testcase.json) == "InstallationFailed" ]
                         then
