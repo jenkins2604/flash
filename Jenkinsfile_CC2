@@ -24,6 +24,7 @@ pipeline {
                         echo 'deploy'
                         timeout(time: 1000, unit: 'SECONDS') {
                         sh '''
+                        #!/bin/bash
                         cd CC2
                         #curl 'http://192.168.17.123/current_state.json?pw=admin&Relay7=1'
                         python3 -m http.server 8000 &
@@ -31,9 +32,9 @@ pipeline {
                         cp /home/testcc2/project/OcppSIM/testcase.json .
                         ut = $(jq -r '.updatestatus' testcase.json)
                         echo $ut
-                        while [ "$ut" != 'Installed' ]
+                        while [[ $ut != 'Installed' ]]
                         do
-                            if [[ "$ut" == 'DownloadFailed' ]] || [[ "$ut" == 'InstallationFailed' ]]
+                            if [[ $ut == 'DownloadFailed' ]] || [[ $ut == 'InstallationFailed' ]]
                             then
                                 exit 1
                             fi
