@@ -32,9 +32,9 @@ pipeline {
                         cp /home/testcc2/project/OcppSIM/testcase.json .
                         #ut = $(jq -r '.updatestatus' testcase.json)
                         #echo $ut
-                        while [ $(jq -r '.updatestatus' testcase.json) != 'Installed' ]
+                        while [ $(jq -r '.updatestatus' testcase.json) != "Installed" ]
                         do
-                            if [ $(jq -r '.updatestatus' testcase.json) == 'DownloadFailed' ] || [ $(jq -r '.updatestatus' testcase.json) == 'InstallationFailed' ]
+                            if [ $(jq -r .updatestatus' testcase.json) == "DownloadFailed" ] || [ $(jq -r '.updatestatus' testcase.json) == "InstallationFailed" ]
                             then
                                 exit 1
                             fi
