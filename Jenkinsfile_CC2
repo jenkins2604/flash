@@ -13,7 +13,7 @@ pipeline {
                 sh '''
                     cd CC2
                     rm -rf *.bin*
-                    cp /home/jenkins/upgrade-dev.bin . 
+                    cp /home/jenkins/upgrade-dev.bin ./upgrade-ccu-dev.bin 
                 '''
             }
         }
@@ -40,13 +40,11 @@ pipeline {
                     echo $ut
                     while [ $ut != "Installed" ]
                     do
-                        if [ $(jq -r '.updatestatus' testcase.json) == "DownloadFailed" ] || [ $(jq -r '.updatestatus' testcase.json) == "InstallationFailed" ]
+                        if [ $ut == "DownloadFailed" ] || [ $ut == "InstallationFailed" ]
                         then
                             echo "failed update"
                             exit 1
                         fi
-
-                        continue
                     done
                 '''
             }
