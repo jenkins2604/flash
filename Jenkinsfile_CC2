@@ -4,24 +4,23 @@ pipeline {
         stage('Check out artifact') {
             steps {
                 echo 'Checkout'
-                /*sh '''
+                sh '''
                 cd CC2
                 rm -rf *.bin*
                 wget http://sevikci01.creatorctek.local:8080/job/oe-build/job/master/lastSuccessfulBuild/artifact/deploy-ccu/upgrade-ccu-dev.bin
                 '''
-                */
-                sh '''
-                    cd CC2
-                    rm -rf *.bin*
-                    cp /home/jenkins/upgrade-dev.bin ./upgrade-ccu-dev.bin
-                '''
+                
+                // sh '''
+                //     cd CC2
+                //     rm -rf *.bin*
+                //     cp /home/jenkins/upgrade-dev.bin ./upgrade-ccu-dev.bin
+                // '''
             }
         }
         stage('deploy') {
             steps {
                     echo 'deploy'
                     sh '''#!/usr/bin/env bash
-                        touch result
                         cd CC2
                         python3 -m http.server 8000 &
                         echo Update|nc -w 10 localhost 8001
@@ -38,12 +37,15 @@ pipeline {
                             echo $re
                             if [[ $re == *"error"* ]]
                             then
+                                echo Error
                                 exit 1
                             elif [[ $re == *"Installed"* ]]
                             then
+                                echo Installed
                                 exit 0
                             elif [[ $re == *"DownloadFailed"* ]] || [[ $re == *"InstallationFailed"* ]]
                             then
+                                echo Failed
                                 exit 1
                             fi
                         done
