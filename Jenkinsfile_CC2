@@ -32,7 +32,7 @@ pipeline {
             steps {
                 timeout(time: 200, unit: 'SECONDS') {
                     sh '''#!/usr/bin/env bash
-                    while True
+                    while true
                         do
                             re=$(echo tm fns|nc -w 5 localhost 8001)
                             echo $re
