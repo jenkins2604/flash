@@ -35,7 +35,7 @@ pipeline {
                         do
                             re=$(echo tm fsn|nc -w 10 localhost 8001)
                             echo $re
-                            if [[ $re == *"error"* ]]
+                            if [[ $re == *"logerr: "* ]]
                             then
                                 echo Error
                                 exit 1
