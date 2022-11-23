@@ -13,65 +13,64 @@ pipeline {
                 sh '''
                     cd CC2
                     rm -rf *.bin*
-                    cp /home/jenkins/upgrade-dev.bin ./upgrade-ccu-dev.bin 
+                    cp /home/jenkins/upgrade-dev.bin ./upgrade-ccu-dev.bin
                 '''
             }
         }
         stage('deploy') {
             steps {
-
                     echo 'deploy'
-                        timeout(time: 1000, unit: 'SECONDS') {
-                        sh '''
-                            cd CC2
-                            
-                            python3 -m http.server 8000 &
-                            echo Update | nc -w 10 localhost 8001
-                        '''
-                        }
-                    }
+                    sh '''#!/usr/bin/env bash
+                        touch result
+                        cd CC2
+                        python3 -m http.server 8000 &
+                        echo Update | nc -w 10 localhost 8001
+                    '''
+            }
         }
         stage('Test firmware update') {
             steps {
-                sh '''#!/usr/bin/env bash
-                    
-                    cp /home/testcc2/project/OcppSIM/testcase.json .
-                    ut=$(jq -r '.updatestatus' testcase.json)
-                    echo $ut
-                    while [ $ut != "Installed" ]
-                    do
-                        if [ $ut == "DownloadFailed" ] || [ $ut == "InstallationFailed" ]
-                        then
-                            echo "failed update"
-                            exit 1
-                        fi
-                    done
+                timeout(time: 200, unit: 'SECONDS') {
+                    sh '''#!/usr/bin/env bash
+                    while True
+                        do
+                            re=echo tm ns | nc -w 10 localhost 8001
+                            echo $re
+                            if [ $re == Installed" ]
+                            then
+                                exit 0
+                            elif [ $re == "DownloadFailed" ] || [ $re == "InstallationFailed" ]
+                            then
+                                exit 1
+                            fi
+                        done
                 '''
+                }
             }
         }
-        stage('Test start charging'){
-            steps {
-                echo "test"
-                sh '''
-                    curl 'http://192.168.17.123/current_state.json?pw=admin&Relay7=1'
-                    if [ $(jq -r '.ntstatus[1]' testcase.json) != "Charging" ] ; then
-                        exit 1
-                    fi
-                    if [ $(jq -r '.ntstatus[2]' testcase.json) != "SuspendedEV" ] ; then
-                        exit 1
-                    fi
-                '''
-            }
-        }
-        stage('Run') {
-            steps {
-                echo 'RUN'
-                sh '''
-                sleep 300s
-                echo TriggerMessage StatusNotification | nc -w 10 localhost 8001
-                '''
-            }
-        }
+        // stage('Test start charging'){
+        //     steps {
+        //         echo "test"
+        //         sh '''
+        //             curl 'http://192.168.17.123/current_state.json?pw=admin&Relay7=1'
+        //             if [ $(jq -r '.ntstatus[1]' testcase.json) != "Charging" ] ; then
+        //                 exit 1
+        //             fi
+        //             if [ $(jq -r '.ntstatus[2]' testcase.json) != "SuspendedEV" ] ; then
+        //                 exit 1
+        //             fi
+        //         '''
+        //     }
+        // }
+        // stage('Run') {
+        //     steps {
+        //         echo 'RUN'
+        //         sh '''
+        //         sleep 300s
+        //         echo TriggerMessage StatusNotification | nc -w 10 localhost 8001
+        //         '''
+        //     }
+        // }
     }
     post {
         success { gerritReview score:1 }
