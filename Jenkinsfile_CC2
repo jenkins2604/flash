@@ -34,7 +34,7 @@ pipeline {
                     sh '''#!/usr/bin/env bash
                     while true
                         do
-                            re=$(echo tm fns|nc -w 5 localhost 8001)
+                            re=$(echo tm fsn|nc -w 10 localhost 8001)
                             echo $re
                             if [[ $re == "Installed" ]]
                             then
