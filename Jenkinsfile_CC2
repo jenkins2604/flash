@@ -7,7 +7,7 @@ pipeline {
                 sh '''
                 cd CC2
                 rm -rf *.bin*
-                wget http://sevikci01.creatorctek.local:8080/job/oe-build/job/master/lastSuccessfulBuild/artifact/deploy-ccu/upgrade-ccu-dev.bin
+                wget http://192.168.2.73:8080/job/oe-build/job/master/lastSuccessfulBuild/artifact/deploy-ccu/upgrade-ccu-dev.bin
                 '''
                 
                 // sh '''
