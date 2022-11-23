@@ -36,10 +36,13 @@ pipeline {
                         do
                             re=$(echo tm fsn|nc -w 10 localhost 8001)
                             echo $re
-                            if [[ $re == "Installed" ]]
+                            if [[ $re == *"error"* ]]
+                            then
+                                exit 1
+                            elif [[ $re == *"Installed"* ]]
                             then
                                 exit 0
-                            elif [[ $re == "DownloadFailed" ]] || [[ $re == "InstallationFailed" ]]
+                            elif [[ $re == *"DownloadFailed"* ]] || [[ $re == *"InstallationFailed"* ]]
                             then
                                 exit 1
                             fi
