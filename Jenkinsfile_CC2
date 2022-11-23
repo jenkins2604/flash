@@ -24,7 +24,7 @@ pipeline {
                         touch result
                         cd CC2
                         python3 -m http.server 8000 &
-                        echo Update | nc -w 10 localhost 8001
+                        echo Update|nc -w 10 localhost 8001
                     '''
             }
         }
@@ -34,12 +34,12 @@ pipeline {
                     sh '''#!/usr/bin/env bash
                     while True
                         do
-                            re=echo tm ns | nc -w 10 localhost 8001
+                            re=$(echo tm fns|nc -w 5 localhost 8001)
                             echo $re
-                            if [ $re == Installed" ]
+                            if [[ $re == Installed" ]]
                             then
                                 exit 0
-                            elif [ $re == "DownloadFailed" ] || [ $re == "InstallationFailed" ]
+                            elif [[ $re == "DownloadFailed" ]] || [[ $re == "InstallationFailed" ]]
                             then
                                 exit 1
                             fi
