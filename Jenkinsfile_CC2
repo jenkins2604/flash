@@ -11,41 +11,42 @@ pipeline {
                 '''
             }
         }
-        stage('deploy') {
+        stage('Trigger Update') {
             steps {
                     echo 'deploy'
                     sh '''#!/usr/bin/env bash
                         cd CC2
                         python3 -m http.server 8000 &
-                        echo Update|nc -w 10 localhost 8001
-                        sleep 10
+                        #echo Update|nc -w 10 localhost 8001
                     '''
             }
         }
         stage('Test firmware update') {
             steps {
-                timeout(time: 200, unit: 'SECONDS') {
-                    sh '''#!/usr/bin/env bash
-                    while true
-                        do
-                            re=$(echo tm fsn|nc -w 10 localhost 8001)
-                            echo $re
-                            if [[ $re == *"logerr: "* ]]
-                            then
-                                echo Error
-                                exit 1
-                            elif [[ $re == *"Installed"* ]]
-                            then
-                                echo Installed
-                                exit 0
-                            elif [[ $re == *"DownloadFailed"* ]] || [[ $re == *"InstallationFailed"* ]]
-                            then
-                                echo Failed
-                                exit 1
-                            fi
-                        done
-                '''
-                }
+                // timeout(time: 600, unit: 'SECONDS') {
+                //     sh '''#!/usr/bin/env bash
+                //     while true
+                //         do
+                //             re=$(echo tm fsn|nc -w 20 localhost 8001)
+                //             echo $re
+                //             if [[ $re == *"logerr: "* ]]
+                //             then
+                //                 echo Error
+                //                 exit 1
+                //             elif [[ $re == *"Installed"* ]]
+                //             then
+                //                 echo reboot|nc -w 10 localhost 8001
+                //                 echo Installed
+                //                 exit 0
+                //             elif [[ $re == *"DownloadFailed"* ]] || [[ $re == *"InstallationFailed"* ]]
+                //             then
+                //                 echo Failed
+                //                 exit 1
+                //             fi
+                //         done
+                // '''
+                // }
+                echo 'aa'
             }
         }
         // stage('Test start charging'){
@@ -62,15 +63,14 @@ pipeline {
         //         '''
         //     }
         // }
-        // stage('Run') {
-        //     steps {
-        //         echo 'RUN'
-        //         sh '''
-        //         sleep 300s
-        //         echo TriggerMessage StatusNotification | nc -w 10 localhost 8001
-        //         '''
-        //     }
-        // }
+        stage('Run test') {
+            steps {
+                echo 'RUN'
+                sh '''
+                echo TriggerMessage StatusNotification | nc -w 10 localhost 8001
+                '''
+            }
+        }
     }
     post {
         success { gerritReview score:1 }
