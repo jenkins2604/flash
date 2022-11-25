@@ -1,0 +1,38 @@
+<testsuite name="smoke.Smoke Test" tests="2" errors="0" failures="2" skipped="0" time="2.395405" timestamp="2022-11-25T09:52:40.910688" hostname="raspberrypi"><testcase classname="smoke.Smoke Test" name="change state B to C" status="failed" time="0.873307"><failure type="AssertionError" message="connector 1&#10;Expected: 'Charging'&#10;     but: was 'Faulted'&#10;">
+<![CDATA[
+Failing step: Then the EVSE should switch to state C ... failed in 0.509s
+Location: smoke.feature:8
+Assertion Failed: connector 1
+Expected: 'Charging'
+     but: was 'Faulted'
+]]>
+</failure><system-out>
+<![CDATA[
+@scenario.begin
+  Scenario: change state B to C
+    Given the current state is B ... passed in 0.188s
+    When EV switch to C ... passed in 0.176s
+    Then the EVSE should switch to state C ... failed in 0.509s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="smoke.Smoke Test" name="Check firmware version" status="failed" time="1.522098"><failure type="AssertionError" message="&#10;Expected: 'match'&#10;     but: was 'not match'&#10;">
+<![CDATA[
+Failing step: Then the firmware version and shash id should match ... failed in 0.002s
+Location: smoke.feature:12
+Assertion Failed: 
+Expected: 'match'
+     but: was 'not match'
+]]>
+</failure><system-out>
+<![CDATA[
+@scenario.begin
+  Scenario: Check firmware version
+    When comparing the firmware version and git shash id ... passed in 1.520s
+    Then the firmware version and shash id should match ... failed in 0.002s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase></testsuite>
