@@ -55,16 +55,13 @@ pipeline {
                 sh '''
                 cd CC2/feature
                 behave --junit
-                cd reports
-                step([$class: 'JUnitResultArchiver', testResults: '*.xml', healthScaleFactor: 1.0])
-                junit '*.xml'
                 '''
             }
         }
     }
     post {
-        success { gerritReview score:1 }
-        unstable { gerritReview score:0 }
-        failure { gerritReview score:-1 }
+        always {
+            junit '/reports/*.xml'
+        }
     }
 }
