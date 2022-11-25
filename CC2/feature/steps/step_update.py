@@ -9,7 +9,14 @@ def compare(version, hash_id):
     """
     assert version is not None
     assert hash_id is not None
-    if version == hash_id:
+    version = version.splitlines()
+    hash_id = hash_id.splitlines()
+    print('version ')
+    print(version)
+    print('hash_id ')
+    print(hash_id)
+
+    if version[0] == hash_id[0]:
         return "match"
     else:
         return "not match"
@@ -23,7 +30,7 @@ def step_comparing_the_firmware_version_and_git_shash_id(context):
     
     p = Path(__file__).resolve(strict=True).parents[2]
     with open(p / "version") as f:
-        context.hash_id = f.readline().strip('\n')
+        context.hash_id = f.read()
 
 @then('the firmware version and shash id should {be}')
 def step_the_firmware_version_and_shash_id_should(context, be):
