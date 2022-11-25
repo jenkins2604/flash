@@ -54,7 +54,7 @@ pipeline {
                 echo 'RUN'
                 sh '''
                 cd CC2/feature
-                behave --junit
+                #behave --junit
                 '''
             }
         }
