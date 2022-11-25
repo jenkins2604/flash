@@ -7,7 +7,11 @@ pipeline {
                 sh '''
                 cd CC2
                 rm -rf *.bin*
-                rm version
+                if [ -f version ]; then
+                    rm version
+                fi
+
+                
                 wget http://192.168.2.73:8080/job/oe-build/job/master/lastSuccessfulBuild/artifact/deploy-ccu/upgrade-ccu-dev.bin
                 wget http://192.168.2.73:8080/job/oe-build/job/master/lastSuccessfulBuild/artifact/deploy-ccu/version
                 '''
