@@ -54,8 +54,6 @@ pipeline {
                 echo 'RUN'
                 sh '''
                 cd CC2/feature
-                su
-                apt install python3-behave
                 behave --junit
                 cd reports
                 junit '*.xml'
