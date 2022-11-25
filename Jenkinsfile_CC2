@@ -59,7 +59,7 @@ pipeline {
             steps {
                 echo 'RUN'
                 sh '''
-                sleep 300
+                sleep 600
                 cd CC2/feature
                 behave --junit
                 '''

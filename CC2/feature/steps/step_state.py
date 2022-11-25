@@ -11,10 +11,10 @@ def get_status_pack():
     """
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.connect(('127.0.0.1', 8001))
-    
+    time.sleep(10)
     message = "tm sn"
     sock.sendall(message.encode())
-    time.sleep(0.5)
+    time.sleep(3)
     sock.shutdown(socket.SHUT_WR)
     res = ""
     data = sock.recv(1024)
