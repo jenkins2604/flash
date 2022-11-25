@@ -4,15 +4,15 @@ pipeline {
         stage('Check out artifact') {
             steps {
                 echo 'Checkout'
-                sh '''
-                cd CC2
+                // sh '''
+                // cd CC2
                 // rm -rf *.bin*
                 // if [ -f version ]; then
                 //     rm version
                 // fi
                 // wget http://192.168.2.73:8080/job/oe-build/job/master/lastSuccessfulBuild/artifact/deploy-ccu/upgrade-ccu-dev.bin
                 // wget http://192.168.2.73:8080/job/oe-build/job/master/lastSuccessfulBuild/artifact/deploy-ccu/version
-                '''
+                // '''
             }
         }
         stage('Trigger Update') {
