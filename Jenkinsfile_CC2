@@ -20,7 +20,7 @@ pipeline {
                     sh '''#!/usr/bin/env bash
                         cd CC2
                         python3 -m http.server 8000 &
-                        #echo Update|nc -w 10 localhost 8001
+                        echo Update|nc -w 10 localhost 8001
                     '''
             }
         }
