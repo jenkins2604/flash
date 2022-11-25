@@ -26,8 +26,9 @@ pipeline {
         }
         stage('Test firmware update') {
             steps {
+                echo 'update'
                 // timeout(time: 600, unit: 'SECONDS') {
-                //     echo 'update'
+                //     
                 //     sh '''#!/usr/bin/env bash
                 //     while true
                 //         do
