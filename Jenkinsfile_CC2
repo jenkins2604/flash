@@ -1,5 +1,25 @@
 pipeline {
     agent {label 'pi'}
+    def checkCS() {
+        echo "checking CS"
+        sh '''
+            while true
+            do
+                re=$(echo quit|nc -q 0 localhost 8001)
+                err=$(echo $re | cut -c 1-7)
+                if [[ $err == "ErrorCS" ]] || [[ $err == "" ]]
+                then
+                    echo "no connection"
+                    sleep 20s
+                    continue
+                else
+                    echo "have connection"
+                    break
+                fi
+
+            done
+        '''
+    }
     stages {
         stage('Check out artifact') {
             steps {
@@ -18,24 +38,9 @@ pipeline {
         stage('Trigger Update') {
             steps {
                     timeout(time: 500, unit: 'SECONDS') {
-                        sh '''#!/usr/bin/env bash
-                            cd CC2
-                            python3 -m http.server 8000 &
-                            while true
-                            do
-                                re=$(echo quit|nc -q 0 localhost 8001)
-                                err=$(echo $re | cut -c 1-7)
-                                if [[ $err == "ErrorCS" ]] || [[ $err == "" ]]
-                                then
-                                    echo "no connection"
-                                    sleep 20s
-                                    continue
-                                else
-                                    echo "have connection"
-                                    break
-                                fi
-
-                            done
+                        checkCS()
+                        sh '''
+                            echo "aa"
                             #echo Update|nc -w 10 localhost 8001
                         '''
                     }
