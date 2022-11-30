@@ -1,25 +1,6 @@
 pipeline {
-    agent {label 'pi'}
-    def checkCS() {
-        echo "checking CS"
-        sh '''
-            while true
-            do
-                re=$(echo quit|nc -q 0 localhost 8001)
-                err=$(echo $re | cut -c 1-7)
-                if [[ $err == "ErrorCS" ]] || [[ $err == "" ]]
-                then
-                    echo "no connection"
-                    sleep 20s
-                    continue
-                else
-                    echo "have connection"
-                    break
-                fi
-
-            done
-        '''
-    }
+    agent { label 'pi' }
+    
     stages {
         stage('Check out artifact') {
             steps {
@@ -116,4 +97,25 @@ pipeline {
             junit 'CC2/feature/reports/*.xml'
         }
     }
+}
+
+def checkCS() {
+    echo "checking CS"
+    sh '''
+        while true
+        do
+            re=$(echo quit|nc -q 0 localhost 8001)
+            err=$(echo $re | cut -c 1-7)
+            if [[ $err == "ErrorCS" ]] || [[ $err == "" ]]
+            then
+                echo "no connection"
+                sleep 20s
+                continue
+            else
+                echo "have connection"
+                break
+            fi
+
+        done
+    '''
 }
