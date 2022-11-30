@@ -19,6 +19,11 @@ pipeline {
         stage('Trigger Update') {
             steps {
                     timeout(time: 800, unit: 'SECONDS') {
+                        sh '''
+                            curl 'http://192.168.17.123/current_state.json?pw=admin&Relay4=0'
+                            curl 'http://192.168.17.123/current_state.json?pw=admin&Relay4=1'
+                            python3 CC2/CentralSystem.py &
+                        '''
                         checkCS()
                         sh '''
                             echo "aa"
@@ -68,27 +73,13 @@ pipeline {
         stage('Run test') {
             steps {
                 echo 'RUN'
-                // timeout(time: 500, unit: 'SECONDS') {
-                //     sh '''#!/usr/bin/env bash
-                //         cd CC2/feature
-                //         while true
-                //         do
-                //             re=$(echo quit|nc -q 0 localhost 8001)
-                //             isJson=$(echo $re | jq -r type)
-                //             if [[ $re == "" ]] || [[ $isJson == *"error"* ]]
-                //             then
-                //                 echo "no connection"
-                //                 continue
-                //             else
-                //                 echo "have connection"
-                //                 break
-                //             fi
-                //             sleep 20
-                //         done
-
-                //         behave --junit
-                //     '''
-                // }
+                timeout(time: 500, unit: 'SECONDS') {
+                    checkCS()
+                    sh '''#!/usr/bin/env bash
+                        cd CC2/feature
+                        behave --junit
+                    '''
+                }
             }
         }
     }
@@ -102,7 +93,6 @@ pipeline {
 def checkCS() {
     echo "checking CS"
     sh '''
-        echo quit| nc -w 10 localhost 8001
         while true
         do
             re=$(echo quit|nc -q 0 localhost 8001)
