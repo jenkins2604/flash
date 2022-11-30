@@ -22,7 +22,8 @@ def get_status_pack():
         status_pack = json.loads(data.decode())
     except:
         return None
-    
+    print(status_pack)
+    assert(len(status_pack["message"]["ntstatus"]) >= 3)
     return (status_pack["message"]["ntstatus"][1]["status"], status_pack["message"]["ntstatus"][2]["status"])
     
 
