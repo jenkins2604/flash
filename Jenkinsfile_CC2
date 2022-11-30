@@ -24,11 +24,13 @@ pipeline {
                             while true
                             do
                                 re=$(echo quit|nc -q 0 localhost 8001)
-                                isJson=$(echo $re | jq -r type)
-                                if [[ $re == "" ]] || [[ $isJson == *"error"* ]]
+                                isJson=$(echo $re | cut -c 1-7)
+                                if [[ $re == "ErrorCS" ]]
                                 then
+                                    echo "no connection"
                                     continue
                                 else
+                                    echo "have connection"
                                     break
                                 fi
                                 sleep 20
@@ -79,25 +81,27 @@ pipeline {
         stage('Run test') {
             steps {
                 echo 'RUN'
-                timeout(time: 500, unit: 'SECONDS') {
-                    sh '''#!/usr/bin/env bash
-                        cd CC2/feature
-                        while true
-                        do
-                            re=$(echo quit|nc -q 0 localhost 8001)
-                            isJson=$(echo $re | jq -r type)
-                            if [[ $re == "" ]] || [[ $isJson == *"error"* ]]
-                            then
-                                continue
-                            else
-                                break
-                            fi
-                            sleep 20
-                        done
+                // timeout(time: 500, unit: 'SECONDS') {
+                //     sh '''#!/usr/bin/env bash
+                //         cd CC2/feature
+                //         while true
+                //         do
+                //             re=$(echo quit|nc -q 0 localhost 8001)
+                //             isJson=$(echo $re | jq -r type)
+                //             if [[ $re == "" ]] || [[ $isJson == *"error"* ]]
+                //             then
+                //                 echo "no connection"
+                //                 continue
+                //             else
+                //                 echo "have connection"
+                //                 break
+                //             fi
+                //             sleep 20
+                //         done
 
-                        behave --junit
-                    '''
-                }
+                //         behave --junit
+                //     '''
+                // }
             }
         }
     }
