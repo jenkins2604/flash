@@ -18,7 +18,7 @@ pipeline {
         }
         stage('Trigger Update') {
             steps {
-                    timeout(time: 500, unit: 'SECONDS') {
+                    timeout(time: 800, unit: 'SECONDS') {
                         checkCS()
                         sh '''
                             echo "aa"
@@ -104,7 +104,7 @@ def checkCS() {
     sh '''
         while true
         do
-            re=$(echo quit|nc -q 0 localhost 8001)
+            re=$(echo tm|nc -q 0 localhost 8001)
             err=$(echo $re | cut -c 1-7)
             echo $err
             if [[ $err == "ErrorCS" ]] || [[ $err == "" ]]
