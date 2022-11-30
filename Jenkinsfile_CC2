@@ -41,7 +41,7 @@ pipeline {
                                 exit 1
                             else
                                 re=$(echo $re|jq -r '.status.updatestatus')
-                                echo re
+                                echo $re
                             fi
 
                             if [[ $re == *"Installed"* ]]
