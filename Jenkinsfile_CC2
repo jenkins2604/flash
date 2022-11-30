@@ -24,8 +24,8 @@ pipeline {
                             while true
                             do
                                 re=$(echo quit|nc -q 0 localhost 8001)
-                                isJson=$(echo $re | cut -c 1-7)
-                                if [[ $re == "ErrorCS" ]]
+                                err=$(echo $re | cut -c 1-7)
+                                if [[ $err == "ErrorCS" ]]
                                 then
                                     echo "no connection"
                                     continue
