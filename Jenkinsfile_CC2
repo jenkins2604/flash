@@ -42,14 +42,15 @@ pipeline {
                             else
                                 re=$(echo $re|jq -r '.status.updatestatus')
                                 echo $re
+                                exit 0 #chichi
                             fi
 
-                            if [[ $re == *"Installed"* ]]
+                            if [[ $re == "Installed" ]]
                             then
                                 echo reboot|nc -w 10 localhost 8001
                                 echo Installed
                                 exit 0
-                            elif [[ $re == *"DownloadFailed"* ]] || [[ $re == *"InstallationFailed"* ]]
+                            elif [[ $re == "DownloadFailed" ]] || [[ $re == "InstallationFailed" ]]
                             then
                                 echo Failed
                                 exit 1
