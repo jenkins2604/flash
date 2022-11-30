@@ -23,9 +23,8 @@ pipeline {
                             curl 'http://192.168.17.123/current_state.json?pw=admin&Relay4=0'
                             sleep 3s
                             curl 'http://192.168.17.123/current_state.json?pw=admin&Relay4=1'
-                            sleep 10s
-                            pip3 install websocket
                             python3 CC2/CentralSystem.py &
+                            sleep 10s
                         '''
                         checkCS()
                         sh '''
