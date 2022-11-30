@@ -23,6 +23,7 @@ pipeline {
                             curl 'http://192.168.17.123/current_state.json?pw=admin&Relay4=0'
                             sleep 3s
                             curl 'http://192.168.17.123/current_state.json?pw=admin&Relay4=1'
+                            sleep 50s
                             python3 CC2/CentralSystem.py &
                             sleep 10s
                         '''
@@ -37,14 +38,13 @@ pipeline {
         stage('Test firmware update') {
             steps {
                 echo 'update'
-                timeout(time: 600, unit: 'SECONDS') {
+                timeout(time: 100, unit: 'SECONDS') {
                     sh '''#!/usr/bin/env bash
                         while true
                         do
-                            re=$(echo tm fsn|nc -q 0 localhost 8001)
+                            re=$(echo tm fsn|nc -w 20 localhost 8001)
                             echo $re
                             isJson=$(echo $re | jq -r type)
-                            echo $isJson
                             if [[ $isJson == *"error"* ]]
                             then
                                 echo Error
@@ -52,7 +52,6 @@ pipeline {
                             else
                                 re=$(echo $re|jq -r '.message.updatestatus')
                                 echo $re
-                                exit 0 #chichi
                             fi
 
                             if [[ $re == "Installed" ]]
@@ -65,7 +64,6 @@ pipeline {
                                 echo Failed
                                 exit 1
                             fi
-                            sleep 20
                         done
                     '''
                 }
@@ -102,11 +100,9 @@ def checkCS() {
             echo $err
             if [[ $err == "ErrorCS" ]] || [[ $err == "" ]]
             then
-                echo "no connection"
                 sleep 20s
                 continue
             else
-                echo "have connection"
                 break
             fi
 
