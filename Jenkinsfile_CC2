@@ -25,15 +25,16 @@ pipeline {
                             do
                                 re=$(echo quit|nc -q 0 localhost 8001)
                                 err=$(echo $re | cut -c 1-7)
-                                if [[ $err == "ErrorCS" ]]
+                                if [[ $err == "ErrorCS" ]] || [[ $err == "" ]]
                                 then
                                     echo "no connection"
+                                    sleep 20s
                                     continue
                                 else
                                     echo "have connection"
                                     break
                                 fi
-                                sleep 20
+
                             done
                             #echo Update|nc -w 10 localhost 8001
                         '''
