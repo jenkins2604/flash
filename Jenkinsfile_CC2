@@ -102,9 +102,10 @@ pipeline {
 def checkCS() {
     echo "checking CS"
     sh '''
+        echo quit| nc -w 10 localhost 8001
         while true
         do
-            re=$(echo tm|nc -q 0 localhost 8001)
+            re=$(echo quit|nc -q 0 localhost 8001)
             err=$(echo $re | cut -c 1-7)
             echo $err
             if [[ $err == "ErrorCS" ]] || [[ $err == "" ]]
