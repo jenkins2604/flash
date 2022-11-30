@@ -23,7 +23,7 @@ def get_status_pack():
     except:
         return None
     
-    return (status_pack["ntstatus"][1]["status"], status_pack["ntstatus"][2]["status"])
+    return (status_pack["message"]["ntstatus"][1]["status"], status_pack["message"]["ntstatus"][2]["status"])
     
 
 @given('the current state is {state}')

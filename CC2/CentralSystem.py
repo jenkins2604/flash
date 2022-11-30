@@ -18,7 +18,6 @@ from ocpp.v16.enums import Action, AuthorizationStatus, AvailabilityType, Regist
 logging.basicConfig(format='%(asctime)s %(message)s', level=logging.INFO)
 pool = concurrent.futures.ThreadPoolExecutor()
 
-
 class ChargePoint(CP):
     counter = 0
 
@@ -32,6 +31,8 @@ class ChargePoint(CP):
     # SendLocalList
     list_version = 0
 
+    status_pack = {"message" : {"vendorId": "NA", "updatestatus": "NA", "ntstatus": [{}]} }
+    
     @on(Action.BootNotification)
     def on_boot_notification(self, charge_point_vendor, charge_point_model, **kwargs):
         if self.counter < 3:
@@ -83,12 +84,20 @@ class ChargePoint(CP):
         return call_result.StopTransactionPayload(id_tag_info=id_tag_info)
 
     @on(Action.StatusNotification)
-    def on_status_notification(self, **kwargs):
+    def on_status_notification(self, connector_id, error_code, status, timestamp, **kwargs):
+        
+        new_status = call.StatusNotificationPayload(connector_id, error_code, status, timestamp)
+        if len(self.status_pack["ntstatus"]) <= connector_id:
+            self.status_pack["ntstatus"].append(new_status.__dict__)
+        else:
+            self.status_pack["ntstatus"][connector_id] = new_status.__dict__
         return call_result.StatusNotificationPayload()
 
     @on(Action.FirmwareStatusNotification)
     def on_firmware_status_notification(self, status, **kwargs):
         logging.info(status)
+        if status != "Idle":
+            self.status_pack["updatestatus"] = status
         return call_result.FirmwareStatusNotificationPayload()
 
     async def send_reserve_now(self, connector, tag, reservation, **kwargs):
@@ -323,7 +332,7 @@ class ChargePoint(CP):
         """ Run "python -m SimpleHTTPServer" in the folder where you have your firmware file.
         Find your IP address and use port 8000 as file location. Eg. "http://192.168.7.1:8000/upgrade.bin"
         """
-        firmwareLocation = "http://192.168.7.1:8000/upgrade.bin"
+        firmwareLocation = "http://192.168.7.1:8000/upgrade-ccu-dev.bin"
         request = call.UpdateFirmwarePayload(location=firmwareLocation, retrieve_date=datetime.utcnow().isoformat())
         response = await self.call(request)
 
@@ -349,6 +358,8 @@ class ChargePoint(CP):
         else:
             request = call.TriggerMessagePayload(requested_message=message, connector_id=connector_id)
         response = await self.call(request)
+        print('request: ', request)
+        print('response: ' , response)
 
     async def send_clear_cache(self, **kwargs):
         request = call.ClearCachePayload()
@@ -436,24 +447,29 @@ async def command_terminal(csms: CentralSystem):
 async def handle_commands(receive_command, sock, csms):
     command = ""
     while command != "quit":
-        sock.write("=> ".encode())
+        
+        #sock.write("=> ".encode())
         data = await receive_command.read(1024)
+        
         argument = data.decode().split()
+        print("argument: ", argument)
+        if data == "b''" or len(argument) == 0:
+            break
         command = argument[0]
         if not csms.connected_chargers():
-            sock.write("No CS connected.\n".encode())
+            sock.write("ErrorCS: No CS connected.\n".encode())
             continue
         elif len(csms.connected_chargers()) != 1:
-            sock.write("Too many CS's connected.\n".encode())
+            sock.write("ErrorCS: Too many CS's connected.\n".encode())
             continue
-
+        
         cp, task = list(csms.connected_chargers().items())[0]
-
         logging.info("Sending command '{}' to {}".format(command, cp.id))
-        sock.write("Sending command '{}' to {}\n".format(command, cp.id).encode())
+        #sock.write("Sending command '{}' to {}\n".format(command, cp.id).encode())
+        
         if command == "quit":
             logging.info("Quit")
-            sock.write("Ending command terminal.\n".encode())
+            sock.write("Quit".encode())
         elif command == "reboot":
             await cp.send_hardreset()
         elif command == "unlock":
@@ -475,15 +491,15 @@ async def handle_commands(receive_command, sock, csms):
                         f = open(argument[1], "r")
                         charging_profile = json.load(f)
                     except FileNotFoundError:
-                        sock.write("file \"{}\" not found!\n".format(argument[1]).encode())
+                        sock.write("Error: file \"{}\" not found!\n".format(argument[1]).encode())
                     except json.JSONDecodeError:
-                        sock.write("{} is not a JSON file!\n".format(argument[1]).encode())
+                        sock.write("Error: {} is not a JSON file!\n".format(argument[1]).encode())
                     else:
                         await cp.send_set_charging_custom_profile(charging_profile, int(connector_id))
                     finally:
                         f.close()
             else:
-                sock.write("Too few arguments\nUsage: {} <JSON file> <connector>\n".format(command).encode())
+                sock.write("Error: Too few arguments\nUsage: {} <JSON file> <connector>\n".format(command).encode())
         elif command == "clear":
             await cp.send_clear_charging_profile()
         elif command == "start":
@@ -494,12 +510,12 @@ async def handle_commands(receive_command, sock, csms):
                         id_tag = argument[2]
                     await cp.send_start_transaction(id_tag, (int(argument[1])))
             else:
-                sock.write("Too few arguments\nUsage: {} <connector> <id tag>\n".format(command).encode())
+                sock.write("Error: Too few arguments\nUsage: {} <connector> <id tag>\n".format(command).encode())
         elif command == "stop":
             if len(argument) > 1:
                 await cp.send_stop_transaction(int(argument[1]))
             else:
-                sock.write("Too few arguments\nUsage: {} <transactionId>\n".format(command).encode())
+                sock.write("Error: Too few arguments\nUsage: {} <transactionId>\n".format(command).encode())
         elif command == "NgStatus":
             await cp.send_nanogrid_status()
         elif command == "NgClientStatus":
@@ -515,7 +531,7 @@ async def handle_commands(receive_command, sock, csms):
                 await cp.send_generic_datatransfer(argument[1], argument[2], data)
             else:
                 sock.write(
-                    "Wrong number of arguments!\nUsage: {} <vendorId> [<messeageId> [<data>]]\n".format(command).encode())
+                    "Error: Wrong number of arguments!\nUsage: {} <vendorId> [<messeageId> [<data>]]\n".format(command).encode())
         elif command == "RandDataTransfer" or command == "rdt":
             if len(argument) == 1:
                 await cp.send_random_sized_datatransfer()
@@ -531,7 +547,7 @@ async def handle_commands(receive_command, sock, csms):
             if len(argument) > 2:
                 await cp.send_change_configuration(argument[1], argument[2])
             else:
-                sock.write("Too few arguments.\nUsage: {} <key> <value>\n".format(command).encode())
+                sock.write("Error: Too few arguments.\nUsage: {} <key> <value>\n".format(command).encode())
         elif command == "GetConfiguration" or command == "GC":
             logging.info("What? {}".format(argument))
             if len(argument) > 1:
@@ -546,11 +562,11 @@ async def handle_commands(receive_command, sock, csms):
                 await cp.send_get_composite_schedule(int(argument[1]), int(argument[2]))
             else:
                 logging.error("Usage: {} <connectorId> <duration>".format(argument[0]))
-                sock.write("Usage: {} <connectorId> <duration>\n".format(argument[0]).encode())
+                sock.write("Error: Usage: {} <connectorId> <duration>\n".format(argument[0]).encode())
         elif command == "TriggerMessage" or command.lower() == "tm":
             if len(argument) < 2 or len(argument) > 3:
                 logging.error("Usage: {} <requestedMessage> [connectorId]".format(argument[0]))
-                sock.write("Usage: {} <requestedMessage> [connectorId]".format(argument[0]).encode())
+                sock.write("Error: Usage: {} <requestedMessage> [connectorId]".format(argument[0]).encode())
                 continue
             req_message = argument[1]
             message = None
@@ -567,8 +583,8 @@ async def handle_commands(receive_command, sock, csms):
             elif req_message == "StatusNotification" or req_message.lower() == "sn":
                 message = MessageTrigger.status_notification
             else:
-                logging.error("Usage: {} <requestedMessage> [connectorId]".format(argument[0]))
-                sock.write("Usage: {} <requestedMessage> [connectorId]".format(argument[0]).encode())
+                logging.error("err: Usage: {} <requestedMessage> [connectorId]".format(argument[0]))
+                sock.write("Error: Usage: {} <requestedMessage> [connectorId]".format(argument[0]).encode())
                 continue
             connector_id = None
             if len(argument) == 3:
@@ -578,6 +594,7 @@ async def handle_commands(receive_command, sock, csms):
                 await cp.send_trigger_message(message)
             else:
                 await cp.send_trigger_message(message, connector_id)
+            sock.write("{}".format(json.dumps(cp.status_pack)).encode())
         elif command == "ClearCache":
             await cp.send_clear_cache()
         elif command == "GetDiagnostics" or command == "gd":
@@ -590,14 +607,14 @@ async def handle_commands(receive_command, sock, csms):
                 await cp.send_reserve_now(int(argument[1]), argument[2], int(argument[3]))
             else:
                 sock.write(
-                    "Too few arguments.\nUsage: {} <connectorId> <tagId> <reservationId>\n".format(command).encode())
+                    "Error: Too few arguments.\nUsage: {} <connectorId> <tagId> <reservationId>\n".format(command).encode())
         elif command == "CancelReservation":
             if len(argument) > 1:
                 await cp.send_cancel_reservation(int(argument[1]))
             else:
-                sock.write("Too few arguments.\nUsage: {} <reservationId>\n".format(command).encode())
+                sock.write("Error: Too few arguments.\nUsage: {} <reservationId>\n".format(command).encode())
         else:
-            sock.write("Unknown command: {}\n".format(command).encode())
+            sock.write("Error: Unknown command: {}\n".format(command).encode())
             logging.error("Unknown command: {}\n".format(command))
 
     sock.close()
@@ -622,3 +639,4 @@ async def main():
 
 if __name__ == '__main__':
     asyncio.run(main())
+
