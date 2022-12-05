@@ -332,7 +332,7 @@ class ChargePoint(CP):
         """ Run "python -m SimpleHTTPServer" in the folder where you have your firmware file.
         Find your IP address and use port 8000 as file location. Eg. "http://192.168.7.1:8000/upgrade.bin"
         """
-        firmwareLocation = "http://192.168.7.1:8000/upgrade-ccu-dev.bin"
+        firmwareLocation = "http://192.168.7.1:8000/upgrade.bin"
         request = call.UpdateFirmwarePayload(location=firmwareLocation, retrieve_date=datetime.utcnow().isoformat())
         response = await self.call(request)
 
@@ -448,7 +448,6 @@ async def handle_commands(receive_command, sock, csms):
     command = ""
     while command != "quit":
         
-        #sock.write("=> ".encode())
         data = await receive_command.read(1024)
         
         argument = data.decode().split()
@@ -465,7 +464,6 @@ async def handle_commands(receive_command, sock, csms):
         
         cp, task = list(csms.connected_chargers().items())[0]
         logging.info("Sending command '{}' to {}".format(command, cp.id))
-        #sock.write("Sending command '{}' to {}\n".format(command, cp.id).encode())
         
         if command == "quit":
             logging.info("Quit")

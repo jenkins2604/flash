@@ -38,7 +38,7 @@ pipeline {
         stage('Test firmware update') {
             steps {
                 echo 'update'
-                timeout(time: 100, unit: 'SECONDS') {
+                timeout(time: 60, unit: 'SECONDS') {
                     sh '''#!/usr/bin/env bash
                         while true
                         do
@@ -59,7 +59,7 @@ pipeline {
                                 echo reboot|nc -w 10 localhost 8001
                                 echo Installed
                                 exit 0
-                            elif [[ $re == "DownloadFailed" ]] || [[ $re == "InstallationFailed" ]]
+                            elif [[ $re == "NA" ]] || [[ $re == "DownloadFailed" ]] || [[ $re == "InstallationFailed" ]]
                             then
                                 echo Failed
                                 exit 1
