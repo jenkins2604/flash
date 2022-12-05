@@ -9,8 +9,8 @@ pipeline {
                 rm -rf *.bin*
                 if [ -f version ]; then rm version
                 fi
-                wget sevikci01.creatorctek.local/job/oe-build/job/master/lastSuccessfulBuild/artifact/deploy-ccu/upgrade-ccu-dev.bin -O upgrade.bin
-                wget sevikci01.creatorctek.local/job/oe-build/job/master/lastSuccessfulBuild/artifact/deploy-ccu/version
+                #wget http://sevikci01.creatorctek.local:8080/job/oe-build/job/master/lastSuccessfulBuild/artifact/deploy-ccu/upgrade-ccu-dev.bin -O upgrade.bin
+                #wget http://sevikci01.creatorctek.local:8080/job/oe-build/job/master/lastSuccessfulBuild/artifact/deploy-ccu/version
                 '''
             }
         }
