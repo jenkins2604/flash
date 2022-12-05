@@ -1,39 +1,38 @@
 pipeline {
     agent { label 'pi' }
     stages {
-        stage('Check out artifact') {
-            steps {
-                echo 'Checkout'
-                sh '''
-                cd CC2
-                rm -rf *.bin*
-                if [ -f version ]; then rm version
-                fi
-                #wget http://sevikci01.creatorctek.local:8080/job/oe-build/job/master/lastSuccessfulBuild/artifact/deploy-ccu/upgrade-ccu-dev.bin -O upgrade.bin
-                #wget http://sevikci01.creatorctek.local:8080/job/oe-build/job/master/lastSuccessfulBuild/artifact/deploy-ccu/version
-                '''
-            }
-        }
-        stage('Trigger Update') {
-            steps {
-                    timeout(time: 800, unit: 'SECONDS') {
-                        sh '''
-                            curl 'http://192.168.17.123/current_state.json?pw=admin&Relay4=0'
-                            sleep 3s
-                            curl 'http://192.168.17.123/current_state.json?pw=admin&Relay4=1'
-                            sleep 50s
-                            python3 CC2/CentralSystem.py &
-                            echo 'start'
-                            sleep 10s
-                        '''
-                        checkCS()
-                        sh '''
-                            echo 'aa'
-                            #echo Update|nc -w 10 localhost 8001
-                        '''
-                    }
-            }
-        }
+        // stage('Check out artifact') {
+        //     steps {
+        //         echo 'Checkout'
+        //         sh '''
+        //         cd CC2
+        //         rm -rf *.bin*
+        //         if [ -f version ]; then rm version
+        //         fi
+        //         #wget http://sevikci01.creatorctek.local:8080/job/oe-build/job/master/lastSuccessfulBuild/artifact/deploy-ccu/upgrade-ccu-dev.bin -O upgrade.bin
+        //         #wget http://sevikci01.creatorctek.local:8080/job/oe-build/job/master/lastSuccessfulBuild/artifact/deploy-ccu/version
+        //         '''
+        //     }
+        // }
+        // stage('Trigger Update') {
+        //     steps {
+        //             timeout(time: 800, unit: 'SECONDS') {
+        //                 sh '''
+        //                     curl 'http://192.168.17.123/current_state.json?pw=admin&Relay4=0'
+        //                     sleep 3s
+        //                     curl 'http://192.168.17.123/current_state.json?pw=admin&Relay4=1'
+        //                     sleep 50s
+        //                     python3 CC2/CentralSystem.py &
+        //                     echo 'start'
+        //                     sleep 10s
+        //                 '''
+        //                 checkCS()
+        //                 sh '''
+        //                     echo Update|nc -w 10 localhost 8001
+        //                 '''
+        //             }
+        //     }
+        // }
         stage('Test firmware update') {
             steps {
                 timeout(time: 600, unit: 'SECONDS') {
