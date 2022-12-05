@@ -28,7 +28,8 @@ pipeline {
                         '''
                         checkCS()
                         sh '''
-                            echo Update|nc -w 10 localhost 8001
+                            echo 'aa'
+                            #echo Update|nc -w 10 localhost 8001
                         '''
                     }
             }
