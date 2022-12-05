@@ -1,6 +1,5 @@
 pipeline {
     agent { label 'pi' }
-    
     stages {
         stage('Check out artifact') {
             steps {
@@ -8,11 +7,10 @@ pipeline {
                 sh '''
                 cd CC2
                 rm -rf *.bin*
-                if [ -f version ]; then
-                    rm version
+                if [ -f version ]; then rm version
                 fi
-                wget http://192.168.2.73:8080/job/oe-build/job/master/lastSuccessfulBuild/artifact/deploy-ccu/upgrade-ccu-dev.bin
-                wget http://192.168.2.73:8080/job/oe-build/job/master/lastSuccessfulBuild/artifact/deploy-ccu/version
+                wget sevikci01.creatorctek.local/job/oe-build/job/master/lastSuccessfulBuild/artifact/deploy-ccu/upgrade-ccu-dev.bin -O upgrade.bin
+                wget sevikci01.creatorctek.local/job/oe-build/job/master/lastSuccessfulBuild/artifact/deploy-ccu/version
                 '''
             }
         }
@@ -25,47 +23,20 @@ pipeline {
                             curl 'http://192.168.17.123/current_state.json?pw=admin&Relay4=1'
                             sleep 50s
                             python3 CC2/CentralSystem.py &
+                            echo 'start'
                             sleep 10s
                         '''
                         checkCS()
                         sh '''
-                            echo "aa"
-                            #echo Update|nc -w 10 localhost 8001
+                            echo Update|nc -w 10 localhost 8001
                         '''
                     }
             }
         }
         stage('Test firmware update') {
             steps {
-                echo 'update'
-                timeout(time: 60, unit: 'SECONDS') {
-                    sh '''#!/usr/bin/env bash
-                        while true
-                        do
-                            re=$(echo tm fsn|nc -w 20 localhost 8001)
-                            echo $re
-                            isJson=$(echo $re | jq -r type)
-                            if [[ $isJson == *"error"* ]]
-                            then
-                                echo Error
-                                exit 1
-                            else
-                                re=$(echo $re|jq -r '.message.updatestatus')
-                                echo $re
-                            fi
-
-                            if [[ $re == "Installed" ]]
-                            then
-                                echo reboot|nc -w 10 localhost 8001
-                                echo Installed
-                                exit 0
-                            elif [[ $re == "NA" ]] || [[ $re == "DownloadFailed" ]] || [[ $re == "InstallationFailed" ]]
-                            then
-                                echo Failed
-                                exit 1
-                            fi
-                        done
-                    '''
+                timeout(time: 600, unit: 'SECONDS') {
+                    sh './CC2/test_firmware.sh'
                 }
             }
         }
@@ -97,15 +68,9 @@ def checkCS() {
         do
             re=$(echo quit|nc -q 0 localhost 8001)
             err=$(echo $re | cut -c 1-7)
-            echo $err
-            if [[ $err == "ErrorCS" ]] || [[ $err == "" ]]
-            then
-                sleep 20s
-                continue
-            else
-                break
+            if [[ $err == "ErrorCS" ]] || [[ $err == "" ]] then sleep 20s ;continue
+            else break
             fi
-
         done
     '''
 }
