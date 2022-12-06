@@ -1,38 +1,33 @@
 pipeline {
     agent { label 'pi' }
     stages {
-        // stage('Check out artifact') {
-        //     steps {
-        //         echo 'Checkout'
-        //         sh '''
-        //         cd CC2
-        //         rm -rf *.bin*
-        //         if [ -f version ]; then rm version
-        //         fi
-        //         #wget http://sevikci01.creatorctek.local:8080/job/oe-build/job/master/lastSuccessfulBuild/artifact/deploy-ccu/upgrade-ccu-dev.bin -O upgrade.bin
-        //         #wget http://sevikci01.creatorctek.local:8080/job/oe-build/job/master/lastSuccessfulBuild/artifact/deploy-ccu/version
-        //         '''
-        //     }
-        // }
-        // stage('Trigger Update') {
-        //     steps {
-        //             timeout(time: 800, unit: 'SECONDS') {
-        //                 sh '''
-        //                     curl 'http://192.168.17.123/current_state.json?pw=admin&Relay4=0'
-        //                     sleep 3s
-        //                     curl 'http://192.168.17.123/current_state.json?pw=admin&Relay4=1'
-        //                     sleep 50s
-        //                     python3 CC2/CentralSystem.py &
-        //                     echo 'start'
-        //                     sleep 10s
-        //                 '''
-        //                 checkCS()
-        //                 sh '''
-        //                     echo Update|nc -w 10 localhost 8001
-        //                 '''
-        //             }
-        //     }
-        // }
+        stage('Check out artifact') {
+            steps {
+                echo 'Checkout'
+                sh '''
+                cd CC2
+                rm -rf *.bin*
+                if [ -f version ]; then rm version
+                fi
+                #wget http://sevikci01.creatorctek.local:8080/job/oe-build/job/master/lastSuccessfulBuild/artifact/deploy-ccu/upgrade-ccu-dev.bin -O upgrade.bin
+                #wget http://sevikci01.creatorctek.local:8080/job/oe-build/job/master/lastSuccessfulBuild/artifact/deploy-ccu/version
+                '''
+            }
+        }
+        stage('Trigger Update') {
+            steps {
+                    timeout(time: 800, unit: 'SECONDS') {
+                        sh '''
+                            curl 'http://192.168.17.123/current_state.json?pw=admin&Relay4=0' && sleep 3s
+                            curl 'http://192.168.17.123/current_state.json?pw=admin&Relay4=1' && sleep 50s
+                            python3 CC2/CentralSystem.py &
+                            sleep 10s
+                        '''
+                        sh './CC2/checkCS.sh'
+                        sh 'echo Update|nc -w 10 localhost 8001'
+                    }
+            }
+        }
         stage('Test firmware update') {
             steps {
                 timeout(time: 600, unit: 'SECONDS') {
@@ -59,19 +54,4 @@ pipeline {
             junit 'CC2/feature/reports/*.xml'
         }
     }
-}
-
-def checkCS() {
-    echo "checking CS"
-    sh '''
-        while true
-        do
-            re=$(echo quit|nc -q 0 localhost 8001)
-            err=$(echo $re | cut -c 1-7)
-            if [[ $err == "ErrorCS" ]] || [[ $err == "" ]]
-            then sleep 20s; continue
-            else break
-            fi
-        done
-    '''
 }
