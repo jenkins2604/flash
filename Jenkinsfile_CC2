@@ -1,5 +1,13 @@
 pipeline {
     agent { label 'pi' }
+    parameters {
+        choice(
+            choices: ['ONE', 'TWO'], 
+            name: 'PARAMETER_01'
+            ),
+        booleanParam(name: "installOCL", defaultValue: false),
+        string(defaultValue: 'scriptcrunch', name: 'STRING-PARAMETER', trim: true
+    }
     stages {
         stage('Check out artifact') {
             steps {
@@ -28,7 +36,12 @@ pipeline {
                 }
             }
         }
-
+        stage('Install firmware for OCL') {
+            when { expression { params.installOCL } }
+            steps {
+                echo "INSTALLING OCL"
+            }
+        }
         stage('Run test') {
             steps {
                 echo 'RUN'
