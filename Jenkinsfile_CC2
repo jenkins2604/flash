@@ -1,13 +1,10 @@
 pipeline {
     agent { label 'pi' }
-    parameters {
-        choice(
-            choices: ['ONE', 'TWO'], 
-            name: 'PARAMETER_01'
-            ),
+    parameters {[
+        choice(choices: ['ONE', 'TWO'], name: 'PARAMETER_01'),
         booleanParam(name: "installOCL", defaultValue: false),
         string(defaultValue: 'scriptcrunch', name: 'STRING-PARAMETER', trim: true)
-    }
+    ]}
     stages {
         // stage('Check out artifact') {
         //     steps {
