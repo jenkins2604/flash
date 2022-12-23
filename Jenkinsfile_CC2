@@ -6,7 +6,7 @@ pipeline {
             name: 'PARAMETER_01'
             ),
         booleanParam(name: "installOCL", defaultValue: false),
-        string(defaultValue: 'scriptcrunch', name: 'STRING-PARAMETER', trim: true
+        string(defaultValue: 'scriptcrunch', name: 'STRING-PARAMETER', trim: true)
     }
     stages {
         // stage('Check out artifact') {
