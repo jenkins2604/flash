@@ -4,7 +4,7 @@ pipeline {
         booleanParam(name: "installOCL", defaultValue: false)
         string(defaultValue: 'master', name: 'branch', trim: true)
         string(defaultValue: 'upgrade-ccu-dev.bin', name: 'binaryFileName', trim: true)
-        string(defaultValue: 'version', name: 'versionFileName', trim: true)
+        string(defaultValue: 'version-ccu-dev-image', name: 'versionFileName', trim: true)
     }
     stages {
         stage('Check out artifact') {
