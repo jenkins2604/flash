@@ -41,6 +41,7 @@ Feature: Smoke Tests
     Given reset test station 
     And the current state is C
     When trigger fault residue current
-    Then the EVSE should switch to state F
+    Then wait for 5 
+    And the EVSE should switch to state F
 
     

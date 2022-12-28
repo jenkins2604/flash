@@ -9,8 +9,8 @@ def compare(version, hash_id):
     assert hash_id is not None
     version = version.splitlines()
     hash_id = hash_id.splitlines()
-    print("version from CCU: " + version[0])
-    print("hash id: " + hash_id[0])
+    print("hash id: ")
+    print(hash_id[0])
     if version[0] == hash_id[0]:
         return "match"
     else:
@@ -21,7 +21,8 @@ def step_comparing_the_firmware_version_and_git_hash_id(context):
     command = ["sshpass", "-p", "root", "ssh", "root@192.168.7.2", "cat /etc/version"]
     context.version = Popen(command, stdout=PIPE, stderr=PIPE).stdout.read()
     context.version = context.version.decode().strip('\n')
-
+    print("version file:")
+    print(version)
     p = Path(__file__).resolve(strict=True).parents[2]
     with open(p / "version") as f:
         context.hash_id = f.read()
