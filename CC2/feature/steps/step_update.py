@@ -19,10 +19,13 @@ def compare(version, hash_id):
 @when('comparing the firmware version and git hash id')
 def step_comparing_the_firmware_version_and_git_hash_id(context):
     command = ["sshpass", "-p", "root", "ssh", "root@192.168.7.2", "cat /etc/version"]
-    context.version = Popen(command, stdout=PIPE, stderr=PIPE).stdout.read()
+    sp = Popen(command, stdout=PIPE, stderr=PIPE)
+    context.version, context.error = sp.communicate()
     context.version = context.version.decode().strip('\n')
     print("version file:")
     print(context.version)
+    print("error file:")
+    print(context.error)
     p = Path(__file__).resolve(strict=True).parents[2]
     with open(p / "version") as f:
         context.hash_id = f.read()
