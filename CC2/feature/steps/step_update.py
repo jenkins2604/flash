@@ -10,7 +10,7 @@ def compare(version, hash_id):
     version = version.splitlines()
     hash_id = hash_id.splitlines()
     print("hash id: ")
-    print(hash_id[0])
+    print(hash_id)
     if version[0] == hash_id[0]:
         return "match"
     else:
@@ -22,7 +22,7 @@ def step_comparing_the_firmware_version_and_git_hash_id(context):
     context.version = Popen(command, stdout=PIPE, stderr=PIPE).stdout.read()
     context.version = context.version.decode().strip('\n')
     print("version file:")
-    print(version)
+    print(context.version)
     p = Path(__file__).resolve(strict=True).parents[2]
     with open(p / "version") as f:
         context.hash_id = f.read()
