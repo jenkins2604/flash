@@ -47,7 +47,7 @@ pipeline {
                     sh '''#!/usr/bin/env bash
                         ./CC2/checkCS.sh
                         cd CC2/feature
-                        behave --tags=-wip --junit --no-capture --no-color
+                        behave --tags=err --junit --no-capture --no-color
                     '''
                 }
             }
