@@ -3,7 +3,6 @@ Feature: Smoke Tests
     Updating charging state
     Check if CC2 react correctly when faults happen
 
-    @err
     Scenario: Check firmware version
     When comparing the firmware version and git hash id
     Then the firmware version and hash id should match
@@ -46,4 +45,7 @@ Feature: Smoke Tests
     Then the EVSE should switch to state F
     And error code should be OcuErrorRCMDC
 
+    @reset
+    Scenario: Reset
+    Given reset test station
     
