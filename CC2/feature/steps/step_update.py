@@ -9,8 +9,8 @@ def compare(version, hash_id):
     assert hash_id is not None
     version = version.splitlines()
     hash_id = hash_id.splitlines()
-    print("version from CCU: " + version)
-    print("hash id: " + hash_id)
+    print("version from CCU: " + version[0])
+    print("hash id: " + hash_id[0])
     if version[0] == hash_id[0]:
         return "match"
     else:
