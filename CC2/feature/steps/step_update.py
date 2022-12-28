@@ -1,4 +1,4 @@
-from behave   import given, when, then
+from behave import when, then
 from hamcrest import assert_that, equal_to
 from subprocess import Popen,PIPE
 from pathlib import Path
@@ -9,7 +9,8 @@ def compare(version, hash_id):
     assert hash_id is not None
     version = version.splitlines()
     hash_id = hash_id.splitlines()
-
+    print(version)
+    print(hash_id)
     if version[0] == hash_id[0]:
         return "match"
     else:
@@ -25,6 +26,6 @@ def step_comparing_the_firmware_version_and_git_hash_id(context):
     with open(p / "version") as f:
         context.hash_id = f.read()
 
-@then('the firmware version and shash id should {be}')
-def step_the_firmware_version_and_shash_id_should(context, be):
+@then('the firmware version and hash id should {be}')
+def step_the_firmware_version_and_hash_id_should(context, be):
     assert_that(compare(context.version, context.hash_id), equal_to(be))

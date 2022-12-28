@@ -7,7 +7,7 @@ import socket
 import time
 
 
-def get_status_pack() -> Optional[Tuple[str, str]]:
+def get_status_pack(info) -> Optional[Tuple[str, str]]:
     """
     Trigger Message and get status from OCPP Charge point
     """
@@ -25,16 +25,16 @@ def get_status_pack() -> Optional[Tuple[str, str]]:
         return None
     
     assert len(status_pack["message"]["notificationStatus"]) >= 3
-    return status_pack["message"]["notificationStatus"][1]["status"], status_pack["message"]["notificationStatus"][2]["status"]
+    return status_pack["message"]["notificationStatus"][1][info], status_pack["message"]["notificationStatus"][2][info]
 
 def set_charging_state(state):
     url = None
-    if state == 'F':
-        url = 'http://192.168.17.123/current_state.json?pw=admin&Relay11=1&Relay12=1'
     if state == 'B':
-        url = 'http://192.168.17.123/current_state.json?pw=admin&Relay7=0&Relay8=0'
+        url = 'http://192.168.17.123/current_state.json?pw=admin&Relay2=0&Relay15=0&Relay7=0&Relay8=0'
     elif state == 'C':
-        url = 'http://192.168.17.123/current_state.json?pw=admin&Relay7=1&Relay8=1'
+        url = 'http://192.168.17.123/current_state.json?pw=admin&Relay2=0&Relay15=0&Relay7=1&Relay8=1'
+    elif state == 'A':
+        url = 'http://192.168.17.123/current_state.json?pw=admin&Relay2=1&Relay15=1'
     retry = 0
     assert url is not None, "undefined state"
     while retry < 3:
@@ -44,11 +44,33 @@ def set_charging_state(state):
         else:
             retry += 1
     assert resp.status_code == 200, f"error connecting EV Simulator, status code {resp.status_code}"
+    time.sleep(5)
+
 
 @given('the current state is {state}')
 def step_the_current_state_is(context, state):
-    set_charging_state(state)   
-                
+    set_charging_state(state)
+
+@when('trigger fault {fault}')
+def trigger_fault(context, fault):
+    url = None
+    if fault == 'residue current':
+        url = 'http://192.168.17.123/current_state.json?pw=admin&Relay13=1&Relay14=1'
+    elif fault == 'shorted diode':
+        url = 'http://192.168.17.123/current_state.json?pw=admin&Relay5=1&Relay6=1'
+    elif fault == 'negative CP':
+        url = 'http://192.168.17.123/current_state.json?pw=admin&Relay11=1&Relay12=1'
+    retry = 0
+    assert url is not None, "undefined fault"
+    while retry < 3:
+        resp = requests.get(url)
+        if resp.status_code == 200:
+            break
+        else:
+            retry += 1
+    assert resp.status_code == 200, f"error connecting EV Simulator, status code {resp.status_code}"
+    time.sleep(10)
+
 @when('EV switch to {state}')
 def step_EV_switch_to(context, state):
     set_charging_state(state)
@@ -67,7 +89,40 @@ def step_the_EVSE_should_switch_to_state(context, state):
         expect_status = 'SuspendedEVSE'
     elif state == 'Finishing':
         expect_status = 'Finishing'
-    result = get_status_pack()
+    result = get_status_pack("status")
+    print(result)
     assert result is not None
     assert_that(result[0], equal_to(expect_status), 'connector 1')
     assert_that(result[1], equal_to(expect_status), 'connector 2')
+
+@then('error code should be {error}')
+def error_code_should_be(context, error):
+    result = get_status_pack("vendor_error_code")
+    assert result is not None
+    assert_that(result[0], equal_to(error), 'connector 1')
+    assert_that(result[1], equal_to(error), 'connector 2')
+    
+@given('reset test station')
+def reset_test_station(context):
+    url = "http://192.168.17.123/current_state.json?pw=admin&Relay13=0&Relay14=0&Relay5=0&Relay6=0&Relay11=0&Relay12=0" \
+    "&Relay7=0&Relay8=0"
+    retry = 0
+    assert url is not None, "undefined fault"
+    while retry < 3:
+        resp = requests.get(url)
+        if resp.status_code != 200:
+            retry += 1
+            continue
+        else:
+            time.sleep(3)
+            url = 'http://192.168.17.123/current_state.json?pw=admin&Relay2=1&Relay15=1'
+            resp = requests.get(url)
+            break
+            
+    assert resp.status_code == 200, f"error connecting EV Simulator, status code {resp.status_code}"
+    time.sleep(3)
+
+@then('wait for {seconds}')
+def wait_for(context, seconds):
+    time.sleep(int(seconds))
+

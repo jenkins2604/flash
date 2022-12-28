@@ -31,7 +31,7 @@ class ChargePoint(CP):
     # SendLocalList
     list_version = 0
 
-    status_pack = {"message" : {"vendorId": "NA", "updatestatus": "NA", "ntstatus": [{}]} }
+    status_pack = {"message" : {"vendorId": "NA", "updateStatus": "NA", "notificationStatus": [{}, {}, {}]} }
     
     @on(Action.BootNotification)
     def on_boot_notification(self, charge_point_vendor, charge_point_model, **kwargs):
@@ -86,18 +86,16 @@ class ChargePoint(CP):
     @on(Action.StatusNotification)
     def on_status_notification(self, connector_id, error_code, status, timestamp, **kwargs):
         
-        new_status = call.StatusNotificationPayload(connector_id, error_code, status, timestamp)
-        if len(self.status_pack["message"]["ntstatus"]) <= connector_id:
-            self.status_pack["message"]["ntstatus"].append(new_status.__dict__)
-        else:
-            self.status_pack["message"]["ntstatus"][connector_id] = new_status.__dict__
+        new_status = call.StatusNotificationPayload(connector_id, error_code, status, timestamp, **kwargs)
+        if len(self.status_pack["message"]["notificationStatus"]) > connector_id:
+            self.status_pack["message"]["notificationStatus"][connector_id] = new_status.__dict__
         return call_result.StatusNotificationPayload()
 
     @on(Action.FirmwareStatusNotification)
     def on_firmware_status_notification(self, status, **kwargs):
         logging.info(status)
         if status != "Idle":
-            self.status_pack["message"]["updatestatus"] = status
+            self.status_pack["message"]["updateStatus"] = status
         return call_result.FirmwareStatusNotificationPayload()
 
     async def send_reserve_now(self, connector, tag, reservation, **kwargs):
