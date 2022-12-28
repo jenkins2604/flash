@@ -48,7 +48,7 @@ pipeline {
                         ./CC2/checkCS.sh
                         cd CC2/feature
                         ssh-keyscan -H 192.168.7.2 >> ~/.ssh/known_hosts
-                        behave --tags=err --junit --no-capture --no-color
+                        behave --tags=-wip --junit --no-capture --no-color
                     '''
                 }
             }
