@@ -36,6 +36,7 @@ Feature: Smoke Tests
     And the current state is B
     When trigger fault negative CP
     Then the EVSE should switch to state F
+    And wait for 10
     
     Scenario: Test residue current
     Given reset test station 

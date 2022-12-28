@@ -104,8 +104,7 @@ def error_code_should_be(context, error):
     
 @given('reset test station')
 def reset_test_station(context):
-    url = "http://192.168.17.123/current_state.json?pw=admin&Relay13=0&Relay14=0&Relay5=0&Relay6=0&Relay11=0&Relay12=0" \
-    "&Relay7=0&Relay8=0"
+    url = "http://192.168.17.123/current_state.json?pw=admin&Relay13=0&Relay14=0&Relay5=0&Relay6=0&Relay11=0&Relay12=0&Relay7=0&Relay8=0&Relay2=1&Relay15=1"
     retry = 0
     assert url is not None, "undefined fault"
     while retry < 3:
@@ -114,8 +113,8 @@ def reset_test_station(context):
             retry += 1
             continue
         else:
-            time.sleep(3)
-            url = 'http://192.168.17.123/current_state.json?pw=admin&Relay2=1&Relay15=1'
+            time.sleep(5)
+            url = 'http://192.168.17.123/current_state.json?pw=admin&Relay2=0&Relay15=0'
             resp = requests.get(url)
             break
             
