@@ -9,8 +9,8 @@ then
 fi
 err1=$(echo $re|jq -r '.message.notificationStatus[1].error_code')
 err2=$(echo $re|jq -r '.message.notificationStatus[2].error_code')
-echo 'check error connector 1 ${err1}'
-echo 'check error connector 2 ${err2}'
+echo 'check error connector 1 $err1'
+echo 'check error connector 2 $err2'
 if [[ $err1 != "NoError" ]] && [[ $err2 != "NoError" ]]
     then
         echo "Test station faulty. Fix the issues and try again."
