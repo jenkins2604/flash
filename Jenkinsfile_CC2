@@ -6,34 +6,34 @@ pipeline {
         string(defaultValue: 'upgrade-ccu-dev.bin', name: 'binaryFileName', trim: true)
         string(defaultValue: 'version-ccu-dev-image', name: 'versionFileName', trim: true)
     }
-    stages {
-        stage('Check out artifact') {
-            steps {
-                echo 'Checkout'
-                sh '''
-                cd CC2
-                rm -rf *.bin* feature/reports
-                if [ -f version ]; then rm version
-                fi
-                wget http://sevikci01.creatorctek.local:8080/job/oe-build/job/${branch}/lastSuccessfulBuild/artifact/deploy-ccu/${binaryFileName} -O upgrade.bin
-                wget http://sevikci01.creatorctek.local:8080/job/oe-build/job/${branch}/lastSuccessfulBuild/artifact/deploy-ccu/${versionFileName} -O version
-                '''
-            }
-        }
-        stage('Trigger Update') {
-            steps {
-                    timeout(time: 800, unit: 'SECONDS') {
-                        sh './CC2/startupCentralSystem.sh'
-                    }
-            }
-        }
-        stage('Test firmware update') {
-            steps {
-                timeout(time: 600, unit: 'SECONDS') {
-                    sh './CC2/test_firmware.sh'
-                }
-            }
-        }
+    // stages {
+    //     stage('Check out artifact') {
+    //         steps {
+    //             echo 'Checkout'
+    //             sh '''
+    //             cd CC2
+    //             rm -rf *.bin* feature/reports
+    //             if [ -f version ]; then rm version
+    //             fi
+    //             wget http://sevikci01.creatorctek.local:8080/job/oe-build/job/${branch}/lastSuccessfulBuild/artifact/deploy-ccu/${binaryFileName} -O upgrade.bin
+    //             wget http://sevikci01.creatorctek.local:8080/job/oe-build/job/${branch}/lastSuccessfulBuild/artifact/deploy-ccu/${versionFileName} -O version
+    //             '''
+    //         }
+    //     }
+    //     stage('Trigger Update') {
+    //         steps {
+    //                 timeout(time: 800, unit: 'SECONDS') {
+    //                     sh './CC2/startupCentralSystem.sh'
+    //                 }
+    //         }
+    //     }
+    //     stage('Test firmware update') {
+    //         steps {
+    //             timeout(time: 600, unit: 'SECONDS') {
+    //                 sh './CC2/test_firmware.sh'
+    //             }
+    //         }
+    //     }
         stage('Install firmware for OCL') {
             when { expression { params.installOCL } }
             steps {
