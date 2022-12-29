@@ -6,7 +6,7 @@ pipeline {
         string(defaultValue: 'upgrade-ccu-dev.bin', name: 'binaryFileName', trim: true)
         string(defaultValue: 'version-ccu-dev-image', name: 'versionFileName', trim: true)
     }
-    // stages {
+    stages {
     //     stage('Check out artifact') {
     //         steps {
     //             echo 'Checkout'
