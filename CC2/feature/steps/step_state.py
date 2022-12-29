@@ -1,4 +1,4 @@
-from behave import given, when, then
+from behave import step
 from hamcrest import assert_that, equal_to
 from typing import Optional, Tuple
 import requests
@@ -47,11 +47,11 @@ def set_charging_state(state):
     time.sleep(5)
 
 
-@given('the current state is {state}')
+@step('the current state is {state}')
 def step_the_current_state_is(context, state):
     set_charging_state(state)
 
-@when('trigger fault {fault}')
+@step('trigger fault {fault}')
 def trigger_fault(context, fault):
     url = None
     if fault == 'residue current':
@@ -71,11 +71,11 @@ def trigger_fault(context, fault):
     assert resp.status_code == 200, f"error connecting EV Simulator, status code {resp.status_code}"
     time.sleep(10)
 
-@when('EV switch to {state}')
+@step('EV switch to {state}')
 def step_EV_switch_to(context, state):
     set_charging_state(state)
 
-@then('the EVSE should switch to state {state}')
+@step('the EVSE should switch to state {state}')
 def step_the_EVSE_should_switch_to_state(context, state):
     if state == 'B':
         expect_status = 'SuspendedEV'
@@ -95,14 +95,14 @@ def step_the_EVSE_should_switch_to_state(context, state):
     assert_that(result[0], equal_to(expect_status), 'connector 1')
     assert_that(result[1], equal_to(expect_status), 'connector 2')
 
-@then('error code should be {error}')
+@step('error code should be {error}')
 def error_code_should_be(context, error):
     result = get_status_pack("vendor_error_code")
     assert result is not None
     assert_that(result[0], equal_to(error), 'connector 1')
     assert_that(result[1], equal_to(error), 'connector 2')
     
-@given('reset test station')
+@step('reset test station')
 def reset_test_station(context):
     url = "http://192.168.17.123/current_state.json?pw=admin&Relay13=0&Relay14=0&Relay5=0&Relay6=0&Relay11=0&Relay12=0&Relay7=0&Relay8=0&Relay2=1&Relay15=1"
     retry = 0
@@ -121,7 +121,7 @@ def reset_test_station(context):
     assert resp.status_code == 200, f"error connecting EV Simulator, status code {resp.status_code}"
     time.sleep(3)
 
-@then('wait for {seconds}')
+@step('wait for {seconds}')
 def wait_for(context, seconds):
     time.sleep(int(seconds))
 

@@ -23,13 +23,14 @@ Feature: Smoke Tests
     When EV switch to B
     Then the EVSE should switch to state B
     
-    @wip
     Scenario: Test shorted diode
     Given reset test station
-    And the current state is C
+    And the current state is B
     When trigger fault shorted diode
+    And the current state is C
     Then the EVSE should switch to state F
-    And wait for 30
+    And error code should be OcuErrorNegativeCP
+    And wait for 10
     
     Scenario: Test negative CP
     Given reset test station 

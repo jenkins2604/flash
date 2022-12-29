@@ -42,7 +42,6 @@ pipeline {
         }
         stage('Run test') {
             steps {
-                echo 'RUN'
                 timeout(time: 500, unit: 'SECONDS') {
                     sh '''#!/usr/bin/env bash
                         ./CC2/checkCS.sh
