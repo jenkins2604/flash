@@ -32,11 +32,12 @@ Feature: Smoke Tests
     And error code should be OcuErrorNegativeCP
     And wait for 10
     
-    Scenario: Test negative CP
+    Scenario: Test temperature alarm on sensor 1
     Given reset test station 
     And the current state is B
-    When trigger fault negative CP
+    When trigger fault temperature alarm 1
     Then the EVSE should switch to state F
+    And error code should be OcuErrorTemperature1
     And wait for 10
     
     Scenario: Test residue current

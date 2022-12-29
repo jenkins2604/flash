@@ -58,7 +58,7 @@ def trigger_fault(context, fault):
         url = 'http://192.168.17.123/current_state.json?pw=admin&Relay13=1&Relay14=1'
     elif fault == 'shorted diode':
         url = 'http://192.168.17.123/current_state.json?pw=admin&Relay5=1&Relay6=1'
-    elif fault == 'negative CP':
+    elif fault == 'temperature alarm 1':
         url = 'http://192.168.17.123/current_state.json?pw=admin&Relay11=1&Relay12=1'
     retry = 0
     assert url is not None, "undefined fault"
