@@ -16,15 +16,10 @@ pipeline {
             steps {
                 script {
                     echo 'Checkout'
-                    sh '''
-                      cd CC2
-                      rm -rf *.bin* feature/reports
-                      if [ -f version ]; then rm version
-                      fi
-                    '''
                     if (params.targetEnvironment == 'default') {
                         echo "Take the latest successful from oe-build pipeline"
                         sh """
+                          cd CC2
                           wget http://sevikci01.creatorctek.local:8080/job/oe-build/job/${params.branch}/lastSuccessfulBuild/artifact/deploy-ccu/${params.binaryFileName} -O upgrade.bin
                           wget http://sevikci01.creatorctek.local:8080/job/oe-build/job/${params.branch}/lastSuccessfulBuild/artifact/deploy-ccu/${params.versionFileName} -O version
                         """
