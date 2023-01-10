@@ -16,7 +16,6 @@ pipeline {
             steps {
                 script {
                     echo 'Checkout'
-                    cleanWs()
                     sh '''
                       cd CC2
                       rm -rf *.bin* feature/reports
