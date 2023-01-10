@@ -16,6 +16,12 @@ pipeline {
             steps {
                 script {
                     echo 'Checkout'
+                    sh '''
+                      cd CC2
+                      rm -rf *.bin* feature/reports
+                      if [ -f version ]; then rm version
+                      fi
+                    '''
                     if (params.targetEnvironment == 'default') {
                         echo "Take the latest successful from oe-build pipeline"
                         sh """
@@ -31,6 +37,7 @@ pipeline {
                             selector: specific(params.buildNumber),
                             target: '']);
                         sh """
+                            cd CC2
                             mv deploy-ccu/${params.binaryFileName} upgrade.bin
                             mv deploy-ccu/${params.versionFileName} version
                         """
