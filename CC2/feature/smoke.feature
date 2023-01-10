@@ -46,4 +46,5 @@ Feature: Smoke Tests
     When trigger fault residue current
     Then the EVSE should switch to state F
     And error code should be OcuErrorRCMDC
+    And reset test station
     
