@@ -2,22 +2,47 @@ pipeline {
     agent { label 'pi' }
     parameters {
         booleanParam(name: "installOCL", defaultValue: false)
-        string(defaultValue: 'master', name: 'branch', trim: true)
-        string(defaultValue: 'upgrade-ccu-dev.bin', name: 'binaryFileName', trim: true)
-        string(defaultValue: 'version-ccu-dev-image', name: 'versionFileName', trim: true)
+        string(name: 'branch', defaultValue: 'master', trim: true)
+        string(name: 'binaryFileName', defaultValue: 'upgrade-ccu-dev.bin', trim: true)
+        string(name: 'versionFileName', defaultValue: 'version-ccu-dev-image', trim: true)
+        string(name: "targetEnvironment", defaultValue: "default", description: "Pipeline name")
+        string(name: "buildNumber", defaultValue: "default", description: "Pipeline build number")
+    }
+    triggers {
+        upstream(upstreamProjects: params.targetEnvironment, threshold: hudson.model.Result.SUCCESS)
     }
     stages {
         stage('Check out artifact') {
             steps {
-                echo 'Checkout'
-                sh '''
-                cd CC2
-                rm -rf *.bin* feature/reports
-                if [ -f version ]; then rm version
-                fi
-                wget http://sevikci01.creatorctek.local:8080/job/oe-build/job/${branch}/lastSuccessfulBuild/artifact/deploy-ccu/${binaryFileName} -O upgrade.bin
-                wget http://sevikci01.creatorctek.local:8080/job/oe-build/job/${branch}/lastSuccessfulBuild/artifact/deploy-ccu/${versionFileName} -O version
-                '''
+                script {
+                    echo 'Checkout'
+                    cleanWs()
+                    sh '''
+                      cd CC2
+                      rm -rf *.bin* feature/reports
+                      if [ -f version ]; then rm version
+                      fi
+                    '''
+                    if (params.targetEnvironment == 'default') {
+                        echo "Take the latest successful from oe-build pipeline"
+                        sh """
+                          wget http://sevikci01.creatorctek.local:8080/job/oe-build/job/${params.branch}/lastSuccessfulBuild/artifact/deploy-ccu/${params.binaryFileName} -O upgrade.bin
+                          wget http://sevikci01.creatorctek.local:8080/job/oe-build/job/${params.branch}/lastSuccessfulBuild/artifact/deploy-ccu/${params.versionFileName} -O version
+                        """
+                    } else {
+                        echo "Push from a build pipeline"
+                        step ([$class: 'CopyArtifact',
+                            projectName: params.targetEnvironment,
+                            filter: "deploy-ccu/upgrade-ccu-dev.bin, deploy-ccu/version",
+                            selector: specific(params.buildNumber),
+                            target: '']);
+                        sh """
+                            mv deploy-ccu/${params.binaryFileName} upgrade.bin
+                            mv deploy-ccu/${params.versionFileName} version
+                        """
+                    }
+
+                }
             }
         }
         stage('Trigger Update') {
@@ -34,20 +59,14 @@ pipeline {
                 }
             }
         }
-        stage('Install firmware for OCL') {
-            when { expression { params.installOCL } }
-            steps {
-                echo "INSTALLING OCL"
-            }
-        }
         stage('Run test') {
             steps {
+                echo 'RUN'
                 timeout(time: 500, unit: 'SECONDS') {
                     sh '''#!/usr/bin/env bash
                         ./CC2/checkCS.sh
                         cd CC2/feature
-                        ssh-keyscan -H 192.168.7.2 >> ~/.ssh/known_hosts
-                        behave --tags=-wip --junit --no-capture --no-color
+                        behave --junit
                     '''
                 }
             }
@@ -56,6 +75,10 @@ pipeline {
     post {
         always {
             junit 'CC2/feature/reports/*.xml'
+            cleanWs(cleanWhenNotBuilt: false,
+                    deleteDirs: true,
+                    disableDeferredWipeout: true,
+                    notFailBuild: true)
         }
     }
 }
