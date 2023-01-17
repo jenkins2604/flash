@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 #loop until firmware installation is either finished or failed
+echo Update|nc -w 10 localhost 8001
 while true
 do
     re=$(echo tm fsn|nc -w 20 localhost 8001)

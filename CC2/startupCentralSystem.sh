@@ -10,4 +10,3 @@ sleep 10s
 ./CC2/checkCS.sh
 cd CC2
 python3 -m http.server 8000 &
-echo Update|nc -w 10 localhost 8001

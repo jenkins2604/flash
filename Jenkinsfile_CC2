@@ -46,14 +46,14 @@ pipeline {
                 }
             }
         }
-        // stage('Trigger Update') {
-        //     steps {
-        //             timeout(time: 800, unit: 'SECONDS') {
-        //                 sh './CC2/startupCentralSystem.sh'
-        //             }
-        //     }
-        // }
-        // stage('Test firmware update') {
+        stage('Startup test station') {
+            steps {
+                    timeout(time: 800, unit: 'SECONDS') {
+                        sh './CC2/startupCentralSystem.sh'
+                    }
+            }
+        }
+        // stage('Trigger firmware update') {
         //     steps {
         //         timeout(time: 600, unit: 'SECONDS') {
         //             sh './CC2/test_firmware.sh'
