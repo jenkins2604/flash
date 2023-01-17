@@ -90,10 +90,10 @@ pipeline {
     post {
         always {
             junit 'CC2/feature/reports/*.xml'
-            cleanWs(cleanWhenNotBuilt: false,
-                    deleteDirs: true,
-                    disableDeferredWipeout: true,
-                    notFailBuild: true)
+            // cleanWs(cleanWhenNotBuilt: false,
+            //         deleteDirs: true,
+            //         disableDeferredWipeout: true,
+            //         notFailBuild: true)
         }
     }
 }
