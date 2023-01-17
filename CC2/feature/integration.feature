@@ -30,9 +30,9 @@ Feature: Integration Tests
     Scenario: Test contactor welded close
     Given reset test station 
     And the current state is B
-    When trigger fault temperature alarm 1
+    When trigger fault contactor welded close
     Then the EVSE should switch to state F
-    And error code should be OcuErrorTemperature1
+    And error code should be PowerSwitchFailure
     And wait for 10
     
     Scenario: Test residue current

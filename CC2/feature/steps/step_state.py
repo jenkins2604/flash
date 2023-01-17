@@ -58,7 +58,7 @@ def trigger_fault(context, fault):
         url = 'http://192.168.17.123/current_state.json?pw=admin&Relay13=1&Relay14=1'
     elif fault == 'shorted diode':
         url = 'http://192.168.17.123/current_state.json?pw=admin&Relay5=1&Relay6=1'
-    elif fault == 'temperature alarm 1':
+    elif fault == 'contactor welded close':
         url = 'http://192.168.17.123/current_state.json?pw=admin&Relay11=1&Relay12=1'
     retry = 0
     assert url is not None, "undefined fault"
@@ -98,6 +98,7 @@ def step_the_EVSE_should_switch_to_state(context, state):
 @step('error code should be {error}')
 def error_code_should_be(context, error):
     result = get_status_pack("vendor_error_code")
+    print(result)
     assert result is not None
     assert_that(result[0], equal_to(error), 'connector 1')
     assert_that(result[1], equal_to(error), 'connector 2')

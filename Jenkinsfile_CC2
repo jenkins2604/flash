@@ -3,6 +3,7 @@ pipeline {
     parameters {
         booleanParam(name: 'installOCL', defaultValue: false)
         string(name: 'branchOCL', defaultValue: 'master', trim: true)
+        string(name: 'OCLbuildNumber', defaultValue: 'lastSuccessfulBuild', trim: true)
         string(name: 'branch', defaultValue: 'master', trim: true)
         string(name: 'binaryFileName', defaultValue: 'upgrade-ccu-dev.bin', trim: true)
         string(name: 'versionFileName', defaultValue: 'version-ccu-dev-image', trim: true)
@@ -64,8 +65,8 @@ pipeline {
             steps {
                 sh """
                 cd CC2
-                wget http://sevikci01.creatorctek.local:8080/job/OCU-multibranch/job/${params.branch}/lastSuccessfulBuild/artifact/build-ocl/firmware.version
-                wget http://sevikci01.creatorctek.local:8080/job/OCU-multibranch/job/${params.branch}/lastSuccessfulBuild/artifact/build-ocl/src/app/app_ocl.hex
+                wget http://sevikci01.creatorctek.local:8080/job/OCU-multibranch/job/${params.branch}/${params.OCLbuildNumber}/artifact/build-ocl/firmware.version
+                wget http://sevikci01.creatorctek.local:8080/job/OCU-multibranch/job/${params.branch}/${params.OCLbuildNumber}/artifact/build-ocl/src/app/app_ocl.hex
                 ./deployOCL.sh
                 sleep 200s
                 """
