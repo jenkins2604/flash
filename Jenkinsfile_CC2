@@ -68,8 +68,7 @@ pipeline {
                 cd CC2
                 wget http://sevikci01.creatorctek.local:8080/job/OCU-multibranch/job/${params.branch}/lastSuccessfulBuild/artifact/build-ocl/firmware.version
                 wget http://sevikci01.creatorctek.local:8080/job/OCU-multibranch/job/${params.branch}/lastSuccessfulBuild/artifact/build-ocl/src/app/app_ocl.hex
-                ls
-                ./CC2/deployOCL.sh
+                deployOCL.sh
                 sleep 200s
                 """
             }
