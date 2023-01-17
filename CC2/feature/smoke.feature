@@ -32,7 +32,7 @@ Feature: Smoke Tests
     And error code should be OcuErrorNegativeCP
     And wait for 10
     
-    Scenario: Test temperature alarm on sensor 1
+    Scenario: Test contactor welded close
     Given reset test station 
     And the current state is B
     When trigger fault temperature alarm 1
