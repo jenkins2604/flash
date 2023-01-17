@@ -21,7 +21,6 @@ pipeline {
                       cd CC2
                       rm -rf *.bin* feature/reports
                       rm *version*
-                      fi
                     '''
                     if (params.targetEnvironment == 'default') {
                         echo "Take the latest successful from oe-build pipeline"
