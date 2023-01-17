@@ -68,7 +68,7 @@ pipeline {
                 wget http://sevikci01.creatorctek.local:8080/job/OCU-multibranch/job/${params.branch}/${params.OCLbuildNumber}/artifact/build-ocl/firmware.version
                 wget http://sevikci01.creatorctek.local:8080/job/OCU-multibranch/job/${params.branch}/${params.OCLbuildNumber}/artifact/build-ocl/src/app/app_ocl.hex
                 ./deployOCL.sh
-                sleep 230s
+                sleep 200s
                 """
             }
         }
