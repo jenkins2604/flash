@@ -13,40 +13,40 @@ pipeline {
         upstream(upstreamProjects: params.targetEnvironment, threshold: hudson.model.Result.SUCCESS)
     }
     stages {
-        // stage('Check out artifact') {
-        //     steps {
-        //         script {
-        //             echo 'Checkout'
-        //             sh '''
-        //               cd CC2
-        //               rm -rf *.bin* feature/reports
-        //               if [ -f version ]; then rm version
-        //               fi
-        //             '''
-        //             if (params.targetEnvironment == 'default') {
-        //                 echo "Take the latest successful from oe-build pipeline"
-        //                 sh """
-        //                   cd CC2
-        //                   wget http://sevikci01.creatorctek.local:8080/job/oe-build/job/${params.branch}/lastSuccessfulBuild/artifact/deploy-ccu/${params.binaryFileName} -O upgrade.bin
-        //                   wget http://sevikci01.creatorctek.local:8080/job/oe-build/job/${params.branch}/lastSuccessfulBuild/artifact/deploy-ccu/${params.versionFileName} -O version
-        //                 """
-        //             } else {
-        //                 echo "Push from a build pipeline"
-        //                 step ([$class: 'CopyArtifact',
-        //                     projectName: params.targetEnvironment,
-        //                     filter: "deploy-ccu/upgrade-ccu-dev.bin, deploy-ccu/version",
-        //                     selector: specific(params.buildNumber),
-        //                     target: '']);
-        //                 sh """
-        //                     cd CC2
-        //                     mv deploy-ccu/${params.binaryFileName} upgrade.bin
-        //                     mv deploy-ccu/${params.versionFileName} version
-        //                 """
-        //             }
+        stage('Check out artifact') {
+            steps {
+                script {
+                    echo 'Checkout'
+                    sh '''
+                      cd CC2
+                      rm -rf *.bin* feature/reports
+                      rm *version*
+                      fi
+                    '''
+                    if (params.targetEnvironment == 'default') {
+                        echo "Take the latest successful from oe-build pipeline"
+                        sh """
+                          cd CC2
+                          wget http://sevikci01.creatorctek.local:8080/job/oe-build/job/${params.branch}/lastSuccessfulBuild/artifact/deploy-ccu/${params.binaryFileName} -O upgrade.bin
+                          wget http://sevikci01.creatorctek.local:8080/job/oe-build/job/${params.branch}/lastSuccessfulBuild/artifact/deploy-ccu/${params.versionFileName} -O version
+                        """
+                    } else {
+                        echo "Push from a build pipeline"
+                        step ([$class: 'CopyArtifact',
+                            projectName: params.targetEnvironment,
+                            filter: "deploy-ccu/upgrade-ccu-dev.bin, deploy-ccu/version",
+                            selector: specific(params.buildNumber),
+                            target: '']);
+                        sh """
+                            cd CC2
+                            mv deploy-ccu/${params.binaryFileName} upgrade.bin
+                            mv deploy-ccu/${params.versionFileName} version
+                        """
+                    }
 
-        //         }
-        //     }
-        // }
+                }
+            }
+        }
         // stage('Trigger Update') {
         //     steps {
         //             timeout(time: 800, unit: 'SECONDS') {
