@@ -63,7 +63,7 @@ pipeline {
         stage('Deploy OCL firmware') {
             when { environment name: 'installOCL', value: 'true' } 
             steps {
-                sh """
+                sh """#!/usr/bin/env bash
                 ./CC2/checkCS.sh
                 cd CC2
                 wget http://sevikci01.creatorctek.local:8080/job/OCU-multibranch/job/${params.branch}/${params.OCLbuildNumber}/artifact/build-ocl/firmware.version
