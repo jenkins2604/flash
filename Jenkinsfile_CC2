@@ -73,14 +73,25 @@ pipeline {
                 """
             }
         }
-        stage('Run test') {
+        stage('Run smoke test') {
             steps {
                 echo 'RUN'
                 timeout(time: 500, unit: 'SECONDS') {
                     sh '''#!/usr/bin/env bash
                         ./CC2/checkCS.sh
                         cd CC2/feature
-                        behave --junit
+                        behave -i smoke.feature --junit
+                    '''
+                }
+            }
+        }
+        stage('Run integration test') {
+            steps {
+                echo 'RUN'
+                timeout(time: 500, unit: 'SECONDS') {
+                    sh '''#!/usr/bin/env bash
+                        cd CC2/feature
+                        behave -i integration.feature --junit
                     '''
                 }
             }
