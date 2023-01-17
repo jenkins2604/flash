@@ -19,8 +19,7 @@ pipeline {
                     echo 'Checkout'
                     sh '''
                       cd CC2
-                      rm -rf *.bin* feature/reports
-                      rm *version*
+                      rm -rf *.bin* feature/reports *version*
                     '''
                     if (params.targetEnvironment == 'default') {
                         echo "Take the latest successful from oe-build pipeline"
