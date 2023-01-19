@@ -6,6 +6,8 @@ do
     err=$(echo $re | cut -c 1-7)
     if [[ $err == "ErrorCS" ]] || [[ $err == "" ]]
     then sleep 20s; continue
-    else break
+    else
+        sleep 200s
+        break
     fi
 done
