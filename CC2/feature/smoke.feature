@@ -6,6 +6,6 @@ Feature: Smoke Tests
     Then the firmware version and hash id should match
     
     Scenario: check status of test station
-    Then the EVSE should switch to state B
+    Then the EVSE should switch to state A
     And error code should be NoError
     

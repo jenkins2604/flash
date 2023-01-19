@@ -130,6 +130,16 @@ def reset_test_station(context):
             retry += 1
     assert resp.status_code == 200, f"error connecting EV Simulator, status code {resp.status_code}"
 
+@step('wait for test station to start up')
+def wait_for_test_station_to_start_up(context):
+    while True:
+        result = get_status_pack("status")
+        if result == None:
+            time.sleep(20)
+            continue
+        else:
+            break
+
 @step('wait for {seconds}')
 def wait_for(context, seconds):
     time.sleep(int(seconds))
