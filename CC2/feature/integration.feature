@@ -3,7 +3,7 @@ Feature: Integration Tests
     Check if CC2 react correctly when faults happen
     
     Scenario: change state A to B
-    Given reset test station 
+    Given reset to state A 
     And the current state is A
     When EV switch to B
     Then the EVSE should switch to state B
@@ -19,7 +19,7 @@ Feature: Integration Tests
     Then the EVSE should switch to state B
     
     Scenario: Test shorted diode
-    Given reset test station
+    Given reset to state A
     And the current state is B
     When trigger fault shorted diode
     And the current state is C
@@ -28,7 +28,7 @@ Feature: Integration Tests
     And wait for 10
     
     Scenario: Test contactor welded close
-    Given reset test station 
+    Given reset to state A 
     And the current state is B
     When trigger fault contactor welded close
     Then the EVSE should switch to state F
@@ -36,7 +36,7 @@ Feature: Integration Tests
     And wait for 10
     
     Scenario: Test residue current
-    Given reset test station 
+    Given reset to state A
     And the current state is C
     When trigger fault residue current
     Then the EVSE should switch to state F

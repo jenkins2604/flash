@@ -1,7 +1,7 @@
 pipeline {
     agent { label 'pi' }
     parameters {
-        booleanParam(name: 'installOCL', defaultValue: false)
+        booleanParam(name: 'updateOCL', defaultValue: false)
         string(name: 'branchOCL', defaultValue: 'master', trim: true)
         string(name: 'OCLbuildNumber', defaultValue: 'lastSuccessfulBuild', trim: true)
         string(name: 'branch', defaultValue: 'master', trim: true)
@@ -56,21 +56,23 @@ pipeline {
         // stage('Trigger firmware update') {
         //     steps {
         //         timeout(time: 600, unit: 'SECONDS') {
-        //             sh './CC2/test_firmware.sh'
+        //             sh './CC2/updatefirmware.sh'
         //         }
         //     }
         // }
         stage('Deploy OCL firmware') {
             when { environment name: 'installOCL', value: 'true' } 
             steps {
-                sh """#!/usr/bin/env bash
-                ./CC2/checkCS.sh
-                cd CC2
-                wget http://sevikci01.creatorctek.local:8080/job/OCU-multibranch/job/${params.branch}/${params.OCLbuildNumber}/artifact/build-ocl/firmware.version
-                wget http://sevikci01.creatorctek.local:8080/job/OCU-multibranch/job/${params.branch}/${params.OCLbuildNumber}/artifact/build-ocl/src/app/app_ocl.hex
-                ./deployOCL.sh
-                sleep 200s
-                """
+                timeout(time: 800, unit: 'SECONDS') {
+                    sh """#!/usr/bin/env bash
+                    ./CC2/checkCS.sh
+                    cd CC2
+                    wget http://sevikci01.creatorctek.local:8080/job/OCU-multibranch/job/${params.branch}/${params.OCLbuildNumber}/artifact/build-ocl/firmware.version
+                    wget http://sevikci01.creatorctek.local:8080/job/OCU-multibranch/job/${params.branch}/${params.OCLbuildNumber}/artifact/build-ocl/src/app/app_ocl.hex
+                    ./updateOCL.sh
+                    sleep 200s
+                    """
+                }
             }
         }
         stage('Run smoke test') {
@@ -100,10 +102,6 @@ pipeline {
     post {
         always {
             junit 'CC2/feature/reports/*.xml'
-            // cleanWs(cleanWhenNotBuilt: false,
-            //         deleteDirs: true,
-            //         disableDeferredWipeout: true,
-            //         notFailBuild: true)
         }
     }
 }

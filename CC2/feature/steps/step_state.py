@@ -103,24 +103,32 @@ def error_code_should_be(context, error):
     assert_that(result[0], equal_to(error), 'connector 1')
     assert_that(result[1], equal_to(error), 'connector 2')
     
-@step('reset test station')
-def reset_test_station(context):
+@step('reset to state A')
+def reset_to_state_A(context):
     url = "http://192.168.17.123/current_state.json?pw=admin&Relay13=0&Relay14=0&Relay5=0&Relay6=0&Relay11=0&Relay12=0&Relay7=0&Relay8=0&Relay2=1&Relay15=1"
     retry = 0
     assert url is not None, "undefined fault"
     while retry < 3:
         resp = requests.get(url)
-        if resp.status_code != 200:
-            retry += 1
-            continue
-        else:
-            time.sleep(5)
-            url = 'http://192.168.17.123/current_state.json?pw=admin&Relay2=0&Relay15=0'
-            resp = requests.get(url)
+        if resp.status_code == 200:
             break
-            
+        else:
+            retry += 1      
     assert resp.status_code == 200, f"error connecting EV Simulator, status code {resp.status_code}"
     time.sleep(3)
+
+@step('reset test station')
+def reset_test_station(context):
+    url = "http://192.168.17.123/current_state.json?pw=admin&SetAll=0"
+    retry = 0
+    assert url is not None, "undefined fault"
+    while retry < 3:
+        resp = requests.get(url)
+        if resp.status_code == 200:
+            break
+        else:
+            retry += 1
+    assert resp.status_code == 200, f"error connecting EV Simulator, status code {resp.status_code}"
 
 @step('wait for {seconds}')
 def wait_for(context, seconds):
