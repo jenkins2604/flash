@@ -17,3 +17,4 @@ sshpass -p root ssh -t root@192.168.7.2 << EOF
   systemctl stop ledmgr chargemanager outletmanager rfidcd rfidcd2
   systemctl restart sysmgr
 EOF
+sleep 30s

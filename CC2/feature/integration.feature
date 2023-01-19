@@ -40,5 +40,7 @@ Feature: Integration Tests
     When trigger fault residue current
     Then the EVSE should switch to state F
     And vendor error code should be OcuErrorRCMDC
-    And reset test station
+    
+    Scenario: Reset test station
+    Then reset test station
     
