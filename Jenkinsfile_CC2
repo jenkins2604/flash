@@ -61,7 +61,7 @@ pipeline {
             }
         }
         stage('Deploy OCL firmware') {
-            when { environment name: 'installOCL', value: 'true' } 
+            when { environment name: 'updateOCL', value: 'true' } 
             steps {
                 timeout(time: 800, unit: 'SECONDS') {
                     sh """#!/usr/bin/env bash
