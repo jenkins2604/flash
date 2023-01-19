@@ -15,7 +15,7 @@ pipeline {
         upstream(upstreamProjects: params.targetEnvironment, threshold: hudson.model.Result.SUCCESS)
     }
     stages {
-        stage('Check out artifact') {
+        //stage('Check out artifact') {
         //     steps {
         //         script {
         //             echo 'Checkout'
