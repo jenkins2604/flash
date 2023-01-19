@@ -97,6 +97,14 @@ def step_the_EVSE_should_switch_to_state(context, state):
 
 @step('error code should be {error}')
 def error_code_should_be(context, error):
+    result = get_status_pack("error_code")
+    print(result)
+    assert result is not None
+    assert_that(result[0], equal_to(error), 'connector 1')
+    assert_that(result[1], equal_to(error), 'connector 2')
+
+@step('vendor error code should be {error}')
+def vendor_error_code_should_be(context, error):
     result = get_status_pack("vendor_error_code")
     print(result)
     assert result is not None

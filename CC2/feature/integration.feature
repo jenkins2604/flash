@@ -24,22 +24,21 @@ Feature: Integration Tests
     When trigger fault shorted diode
     And the current state is C
     Then the EVSE should switch to state F
-    And error code should be OcuErrorNegativeCP
+    And vendor error code should be OcuErrorNegativeCP
     And wait for 10
     
     Scenario: Test contactor welded close
-    Given reset to state A 
-    And the current state is B
+    Given reset to state A
+    And wait for 10 
     When trigger fault contactor welded close
     Then the EVSE should switch to state F
-    And error code should be PowerSwitchFailure
-    And wait for 10
+    And vendor error code should be PowerSwitchFailure
     
     Scenario: Test residue current
     Given reset to state A
     And the current state is C
     When trigger fault residue current
     Then the EVSE should switch to state F
-    And error code should be OcuErrorRCMDC
+    And vendor error code should be OcuErrorRCMDC
     And reset test station
     

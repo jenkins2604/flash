@@ -11,14 +11,16 @@ do
     fi
     re=$(echo $re|jq -r '.message.updateStatus')
     echo $re
-    if [[ $re == "null" ]] || [[ $re == "NA" ]] || [[ $re == "DownloadFailed" ]] || [[ $re == "InstallationFailed" ]]
+    if [[ $re == "Downloading" ]] || [[ $re == "Installing" ]] 
     then
-        echo Failed
-        exit 1
+        continue
     elif [[ $re == "Installed" ]]
     then
         echo reboot|nc -w 10 localhost 8001
         echo Installed
         exit 0
+    else
+        echo 'update failed'
+        exit 1
     fi
 done

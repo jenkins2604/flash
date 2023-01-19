@@ -4,9 +4,10 @@ pipeline {
         booleanParam(name: 'updateOCL', defaultValue: false)
         string(name: 'branchOCL', defaultValue: 'master', trim: true)
         string(name: 'OCLbuildNumber', defaultValue: 'lastSuccessfulBuild', trim: true)
+        string(name: 'OCLbinaryFileName', defaultValue: 'app_ocl.hex', trim: true)
         string(name: 'branch', defaultValue: 'master', trim: true)
-        string(name: 'binaryFileName', defaultValue: 'upgrade-ccu-dev.bin', trim: true)
-        string(name: 'versionFileName', defaultValue: 'version-ccu-dev-image', trim: true)
+        string(name: 'CCUbinaryFileName', defaultValue: 'upgrade-ccu-dev.bin', trim: true)
+        string(name: 'CCUversionFileName', defaultValue: 'version-ccu-dev-image', trim: true)
         string(name: "targetEnvironment", defaultValue: "default", description: "Pipeline name")
         string(name: "buildNumber", defaultValue: "default", description: "Pipeline build number")
     }
@@ -15,37 +16,37 @@ pipeline {
     }
     stages {
         stage('Check out artifact') {
-            steps {
-                script {
-                    echo 'Checkout'
-                    sh '''
-                      cd CC2
-                      rm -rf *.bin* feature/reports *version*
-                    '''
-                    if (params.targetEnvironment == 'default') {
-                        echo "Take the latest successful from oe-build pipeline"
-                        sh """
-                          cd CC2
-                          wget http://sevikci01.creatorctek.local:8080/job/oe-build/job/${params.branch}/lastSuccessfulBuild/artifact/deploy-ccu/${params.binaryFileName} -O upgrade.bin
-                          wget http://sevikci01.creatorctek.local:8080/job/oe-build/job/${params.branch}/lastSuccessfulBuild/artifact/deploy-ccu/${params.versionFileName} -O version
-                        """
-                    } else {
-                        echo "Push from a build pipeline"
-                        step ([$class: 'CopyArtifact',
-                            projectName: params.targetEnvironment,
-                            filter: "deploy-ccu/upgrade-ccu-dev.bin, deploy-ccu/version",
-                            selector: specific(params.buildNumber),
-                            target: '']);
-                        sh """
-                            cd CC2
-                            mv deploy-ccu/${params.binaryFileName} upgrade.bin
-                            mv deploy-ccu/${params.versionFileName} version
-                        """
-                    }
+        //     steps {
+        //         script {
+        //             echo 'Checkout'
+        //             sh '''
+        //               cd CC2
+        //               rm -rf *.bin* feature/reports *version*
+        //             '''
+        //             if (params.targetEnvironment == 'default') {
+        //                 echo "Take the latest successful from oe-build pipeline"
+        //                 sh """
+        //                   cd CC2
+        //                   wget http://sevikci01.creatorctek.local:8080/job/oe-build/job/${params.branch}/lastSuccessfulBuild/artifact/deploy-ccu/${params.CCUbinaryFileName} -O upgrade.bin
+        //                   wget http://sevikci01.creatorctek.local:8080/job/oe-build/job/${params.branch}/lastSuccessfulBuild/artifact/deploy-ccu/${params.CCUversionFileName} -O version
+        //                 """
+        //             } else {
+        //                 echo "Push from a build pipeline"
+        //                 step ([$class: 'CopyArtifact',
+        //                     projectName: params.targetEnvironment,
+        //                     filter: "deploy-ccu/upgrade-ccu-dev.bin, deploy-ccu/version",
+        //                     selector: specific(params.buildNumber),
+        //                     target: '']);
+        //                 sh """
+        //                     cd CC2
+        //                     mv deploy-ccu/${params.CCUbinaryFileName} upgrade.bin
+        //                     mv deploy-ccu/${params.CCUversionFileName} version
+        //                 """
+        //             }
 
-                }
-            }
-        }
+        //         }
+        //     }
+        // }
         stage('Startup test station') {
             steps {
                     timeout(time: 800, unit: 'SECONDS') {
@@ -53,13 +54,13 @@ pipeline {
                     }
             }
         }
-        stage('Trigger firmware update') {
-            steps {
-                timeout(time: 600, unit: 'SECONDS') {
-                    sh './CC2/updatefirmware.sh'
-                }
-            }
-        }
+        // stage('Trigger firmware update') {
+        //     steps {
+        //         timeout(time: 600, unit: 'SECONDS') {
+        //             sh './CC2/updatefirmware.sh'
+        //         }
+        //     }
+        // }
         stage('Deploy OCL firmware') {
             when { environment name: 'updateOCL', value: 'true' } 
             steps {
@@ -68,9 +69,8 @@ pipeline {
                     ./CC2/checkCS.sh
                     cd CC2
                     wget http://sevikci01.creatorctek.local:8080/job/OCU-multibranch/job/${params.branch}/${params.OCLbuildNumber}/artifact/build-ocl/firmware.version
-                    wget http://sevikci01.creatorctek.local:8080/job/OCU-multibranch/job/${params.branch}/${params.OCLbuildNumber}/artifact/build-ocl/src/app/app_ocl.hex
+                    wget http://sevikci01.creatorctek.local:8080/job/OCU-multibranch/job/${params.branch}/${params.OCLbuildNumber}/artifact/build-ocl/src/app/${params.OCLbinaryFileName}
                     ./updateOCL.sh
-                    sleep 200s
                     """
                 }
             }
