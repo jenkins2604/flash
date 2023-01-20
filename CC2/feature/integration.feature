@@ -27,19 +27,19 @@ Feature: Integration Tests
     And vendor error code should be OcuErrorNegativeCP
     And wait for 10
     
-    Scenario: Test contactor welded close
-    Given reset to state A
-    And wait for 10 
-    When trigger fault contactor welded close
-    Then the EVSE should switch to state F
-    And vendor error code should be PowerSwitchFailure
-    
     Scenario: Test residue current
     Given reset to state A
     And the current state is C
     When trigger fault residue current
     Then the EVSE should switch to state F
     And vendor error code should be OcuErrorRCMDC
+    
+    Scenario: Test contactor welded close
+    Given reset to state A
+    And wait for 30 
+    When trigger fault contactor welded close
+    Then the EVSE should switch to state F
+    And vendor error code should be PowerSwitchFailure
     
     Scenario: Reset test station
     Then reset test station
