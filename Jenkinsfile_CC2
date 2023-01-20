@@ -29,9 +29,7 @@ pipeline {
                         sh """
                           cd CC2
                           wget http://sevikci01.creatorctek.local:8080/job/oe-build/job/${params.branch}/lastSuccessfulBuild/artifact/deploy-ccu/${params.CCUbinaryFileName} -O upgrade.bin
-                          if [ $? -ne 0 ]; then exit 1; fi
                           wget http://sevikci01.creatorctek.local:8080/job/oe-build/job/${params.branch}/lastSuccessfulBuild/artifact/deploy-ccu/${params.CCUversionFileName} -O version
-                          if [ $? -ne 0 ]; then exit 1; fi
                         """
                     } else {
                         echo "Push from a build pipeline"
@@ -75,9 +73,9 @@ pipeline {
                     ./CC2/checkCS.sh
                     cd CC2
                     wget ${params.LinkToOclVersionfile} -O ocl_firmware.version
-                    if [ $? -ne 0 ]; then exit 1; fi
+                    if [ \$? -ne 0 ]; then exit 1; fi
                     wget ${params.LinkToOclHexfile} -O ocl_firmware.hex
-                    if [ $? -ne 0 ]; then exit 1; fi
+                    if [ \$? -ne 0 ]; then exit 1; fi
                     ./updateOCL.sh
                     """
                 }
