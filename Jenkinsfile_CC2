@@ -57,6 +57,7 @@ pipeline {
         // }
         
         stage('Trigger CCU firmware update') {
+            when { environment name: 'updateCCU', value: 'true' }
             steps {
                 timeout(time: 600, unit: 'SECONDS') {
                     sh './CC2/updatefirmware.sh'
