@@ -2,8 +2,8 @@ pipeline {
     agent { label 'pi' }
     parameters {
         booleanParam(name: 'updateOCL', defaultValue: false, description: "Update new software for OCL")
-        string(name: 'LinkToOclVersionFile', defaultValue: 'sevikci01.creatorctek.local:8080/job/OCU-multibranch/job/master/lastSuccessfulBuild/artifact/build-ocl/firmware.version')
-        string(name: 'LinkToOclHexFile', defaultValue: 'sevikci01.creatorctek.local:8080/job/OCU-multibranch/job/master/lastSuccessfulBuild/artifact/build-ocl/src/app/app_ocl.hex')
+        string(name: 'LinkToOclVersionFile', defaultValue: 'http://sevikci01.creatorctek.local:8080/job/OCU-multibranch/job/master/lastSuccessfulBuild/artifact/build-ocl/firmware.version')
+        string(name: 'LinkToOclHexFile', defaultValue: 'http://sevikci01.creatorctek.local:8080/job/OCU-multibranch/job/master/lastSuccessfulBuild/artifact/build-ocl/src/app/app_ocl.hex')
         booleanParam(name: 'updateCCU', defaultValue: false, description: "Update new software for CCU")
         string(name: 'branch', defaultValue: 'master', trim: true)
         string(name: 'CCUbinaryFileName', defaultValue: 'upgrade-ccu-dev.bin', trim: true)
@@ -69,12 +69,13 @@ pipeline {
             when { environment name: 'updateOCL', value: 'true' }
             steps {
                 timeout(time: 800, unit: 'SECONDS') {
+                    echo "${params.LinkToOclVersionfile} "
                     sh """#!/usr/bin/env bash
                     ./CC2/checkCS.sh
                     cd CC2
-                    wget http://${params.LinkToOclVersionfile} -O ocl_firmware.version
+                    wget ${params.LinkToOclVersionfile} -O ocl_firmware.version
                     if [ \$? -ne 0 ]; then exit 1; fi
-                    wget http://${params.LinkToOclHexfile} -O ocl_firmware.hex
+                    wget ${params.LinkToOclHexfile} -O ocl_firmware.hex
                     if [ \$? -ne 0 ]; then exit 1; fi
                     ./updateOCL.sh
                     """
