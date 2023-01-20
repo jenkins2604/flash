@@ -3,6 +3,7 @@ pipeline {
     parameters {
         booleanParam(name: 'updateOCL', defaultValue: false, description: "Update new software for OCL")
         string(name: "LinkToOclVersionFile", defaultValue: "aaaaaaa", trim: true)
+        string(name: "chichi", defaultValue: "aaaaaaa", description: "Pipeline name")
         string(name: "LinkToOclHexFile", defaultValue: 'http://sevikci01.creatorctek.local:8080/job/OCU-multibranch/job/master/lastSuccessfulBuild/artifact/build-ocl/src/app/app_ocl.hex', trim: true)
         booleanParam(name: 'updateCCU', defaultValue: false, description: "Update new software for CCU")
         string(name: 'branch', defaultValue: 'master', trim: true)
@@ -70,7 +71,7 @@ pipeline {
             steps {
                 timeout(time: 800, unit: 'SECONDS') {
                     echo "${params.LinkToOclVersionfile}"
-                    echo "${params.CCUbinaryFileName}"
+                    echo "${params.chichi}"
                     echo "${params.targetEnvironment}"
                     sh """#!/usr/bin/env bash
                     ./CC2/checkCS.sh
