@@ -2,7 +2,7 @@ pipeline {
     agent { label 'pi' }
     parameters {
         booleanParam(name: 'updateOCL', defaultValue: false, description: "Update new software for OCL")
-        string(name: "LinkToOclVersionFile", defaultValue: "http://sevikci01.creatorctek.local:8080/job/OCU-multibranch/job/master/lastSuccessfulBuild/artifact/build-ocl/firmware.version", trim: true)
+        string(name: "LinkToOclVersionFile", defaultValue: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", trim: true)
         string(name: "LinkToOclHexFile", defaultValue: 'http://sevikci01.creatorctek.local:8080/job/OCU-multibranch/job/master/lastSuccessfulBuild/artifact/build-ocl/src/app/app_ocl.hex', trim: true)
         booleanParam(name: 'updateCCU', defaultValue: false, description: "Update new software for CCU")
         string(name: 'branch', defaultValue: 'master', trim: true)
