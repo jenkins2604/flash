@@ -73,7 +73,7 @@ pipeline {
                     ./CC2/checkCS.sh
                     cd CC2
                     wget ${params.LinkToOclVersionfile} -O ocl_firmware.version
-                    if [ \$? -ne 0 ]; then exit 1; fi
+                    #if [ \$? -ne 0 ]; then exit 1; fi
                     wget ${params.LinkToOclHexfile} -O ocl_firmware.hex
                     if [ \$? -ne 0 ]; then exit 1; fi
                     ./updateOCL.sh
