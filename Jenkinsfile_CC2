@@ -24,14 +24,16 @@ pipeline {
                     echo 'Checkout'
                     sh '''
                       cd CC2
-                      rm -rf *.bin* *.hex* feature/reports *version*
+                      rm -rf *.bin* feature/reports version
                     '''
                     if (params.targetEnvironment == 'default') {
                         echo "Take the latest successful from oe-build pipeline"
                         sh """
                           cd CC2
                           wget http://sevikci01.creatorctek.local:8080/job/oe-build/job/${params.branch}/lastSuccessfulBuild/artifact/deploy-ccu/${params.CCUbinaryFileName} -O upgrade.bin
+                          if [ \$? -ne 0 ]; then exit 1; fi
                           wget http://sevikci01.creatorctek.local:8080/job/oe-build/job/${params.branch}/lastSuccessfulBuild/artifact/deploy-ccu/${params.CCUversionFileName} -O version
+                          if [ \$? -ne 0 ]; then exit 1; fi
                         """
                     } else {
                         echo "Push from a build pipeline"
@@ -50,19 +52,18 @@ pipeline {
                 }
             }
         }
-        // stage('Startup test station') {
-        //     steps {
-        //             timeout(time: 800, unit: 'SECONDS') {
-        //                 sh './CC2/startupCentralSystem.sh'
-        //             }
-        //     }
-        // }
-        
+        stage('Startup test station') {
+            steps {
+                    timeout(time: 800, unit: 'SECONDS') {
+                        sh './CC2/startupCentralSystem.sh'
+                    }
+            }
+        }
         stage('Trigger CCU firmware update') {
             when { environment name: 'updateCCU', value: 'true' }
             steps {
                 timeout(time: 600, unit: 'SECONDS') {
-                    sh './CC2/updatefirmware.sh'
+                    sh './CC2/updatesoftwareCCU.sh'
                 }
             }
         }
@@ -75,6 +76,7 @@ pipeline {
                     sh """#!/usr/bin/env bash
                     ./CC2/checkCS.sh
                     cd CC2
+                    rm -rf *.hex* *firmware.version*
                     wget ${params.oclversion} -O ocl_firmware.version
                     if [ \$? -ne 0 ]; then exit 1; fi
                     wget ${params.oclhex} -O ocl_firmware.hex

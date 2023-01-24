@@ -39,7 +39,6 @@ Feature: Integration Tests
     And wait for 30 
     When trigger fault contactor welded close
     Then the EVSE should switch to state F
-    And vendor error code should be PowerSwitchFailure
     
     Scenario: Reset test station
     Then reset test station

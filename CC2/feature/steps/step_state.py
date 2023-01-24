@@ -113,7 +113,7 @@ def vendor_error_code_should_be(context, error):
     
 @step('reset to state A')
 def reset_to_state_A(context):
-    url = "http://192.168.17.123/current_state.json?pw=admin&Relay13=0&Relay14=0&Relay5=0&Relay6=0&Relay11=0&Relay12=0&Relay7=0&Relay8=0&Relay2=1&Relay15=1"
+    url = "http://192.168.17.123/current_state.json?pw=admin&SetAll=16394"
     retry = 0
     assert url is not None, "undefined fault"
     while retry < 3:
