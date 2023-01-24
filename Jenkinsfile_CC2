@@ -88,14 +88,16 @@ pipeline {
             steps {
                 timeout(time: 500, unit: 'SECONDS') {
                     script {
-                        sh '''#!/usr/bin/env bash
-                            ./CC2/checkCS.sh
-                            cd CC2/feature '''
+                        sh './CC2/checkCS.sh'
                         if (params.updateCCU == true) {
-                            sh 'behave -i smoke.feature --junit'
+                            sh '''
+                            cd CC2/feature
+                            behave -i smoke.feature --junit '''
                         }
                         else {
-                            sh 'behave -i smoke.feature --tags="not @ccu" --junit'
+                            sh '''
+                            cd CC2/feature
+                            behave -i smoke.feature --tags="not @ccu" --junit '''
                         }
                     }
                 }
