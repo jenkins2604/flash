@@ -74,18 +74,17 @@ pipeline {
                         rm -rf *.hex* *firmware.version*
                         '''
                         sh """
-                            branch=\$(echo ${params.branchOCL} | sed "s///%252F/g")
-                            echo 'branch is ${branch}'
-                            wget http://sevikci01.creatorctek.local:8080/job/OCU-multibranch/job/${branch}/lastSuccessfulBuild/artifact/build-ocl/src/app/${params.OCLhex} -O ocl_firmware.hex
+                            
+                            wget http://sevikci01.creatorctek.local:8080/job/OCU-multibranch/job/${params.branchOCL}/lastSuccessfulBuild/artifact/build-ocl/src/app/${params.OCLhex} -O ocl_firmware.hex
                             if [ \$? -ne 0 ]
                             then
-                                wget http://sevikci01.creatorctek.local:8080/job/OCU-multibranch/job/${branch}/lastSuccessfulBuild/artifact/main_ocl.hex -O ocl_firmware.hex
+                                wget http://sevikci01.creatorctek.local:8080/job/OCU-multibranch/job/${params.branchOCL}/lastSuccessfulBuild/artifact/main_ocl.hex -O ocl_firmware.hex
                                 if [ \$? -ne 0 ]; then exit 1; fi
                             fi
-                            wget http://sevikci01.creatorctek.local:8080/job/OCU-multibranch/job/${branch}/lastSuccessfulBuild/artifact/build-ocl/${params.OCLversion}  -O ocl_firmware.version
+                            wget http://sevikci01.creatorctek.local:8080/job/OCU-multibranch/job/${params.branchOCL}/lastSuccessfulBuild/artifact/build-ocl/${params.OCLversion}  -O ocl_firmware.version
                             if [ \$? -ne 0 ]
                             then
-                                wget wget http://sevikci01.creatorctek.local:8080/job/OCU-multibranch/job/${branch}/lastSuccessfulBuild/artifact/firmware.version  -O ocl_firmware.version
+                                wget wget http://sevikci01.creatorctek.local:8080/job/OCU-multibranch/job/${params.branchOCL}/lastSuccessfulBuild/artifact/firmware.version  -O ocl_firmware.version
                                 if [ \$? -ne 0 ]; then exit 1; fi
                             fi
                         """
@@ -94,36 +93,36 @@ pipeline {
                 }
             }
         }
-        // stage('Run smoke test') {
-        //     steps {
-        //         timeout(time: 500, unit: 'SECONDS') {
-        //             script {
-        //                 sh './CC2/checkCS.sh'
-        //                 if (params.updateCCU == true) {
-        //                     sh '''
-        //                     cd CC2/feature
-        //                     behave -i smoke.feature --junit '''
-        //                 }
-        //                 else {
-        //                     sh '''
-        //                     cd CC2/feature
-        //                     behave -i smoke.feature --tags="not @ccu" --junit '''
-        //                 }
-        //             }
-        //         }
-        //     }
-        // }
-        // stage('Run integration test') {
-        //     steps {
-        //         echo 'RUN'
-        //         timeout(time: 500, unit: 'SECONDS') {
-        //             sh '''#!/usr/bin/env bash
-        //                 cd CC2/feature
-        //                 behave -i integration.feature --junit
-        //             '''
-        //         }
-        //     }
-        // }
+        stage('Run smoke test') {
+            steps {
+                timeout(time: 500, unit: 'SECONDS') {
+                    script {
+                        sh './CC2/checkCS.sh'
+                        if (params.updateCCU == true) {
+                            sh '''
+                            cd CC2/feature
+                            behave -i smoke.feature --junit '''
+                        }
+                        else {
+                            sh '''
+                            cd CC2/feature
+                            behave -i smoke.feature --tags="not @ccu" --junit '''
+                        }
+                    }
+                }
+            }
+        }
+        stage('Run integration test') {
+            steps {
+                echo 'RUN'
+                timeout(time: 500, unit: 'SECONDS') {
+                    sh '''#!/usr/bin/env bash
+                        cd CC2/feature
+                        behave -i integration.feature --junit
+                    '''
+                }
+            }
+        }
     }
     post {
         always {
