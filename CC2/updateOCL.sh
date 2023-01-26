@@ -28,11 +28,12 @@ echo loading...
 
 if [[ $defaultVersion == $OclVersion ]]
   then
+    sleep 60s #make sure that the OCL firmware finish installed, could be improved by checking data received from OCPP
     echo 'switch version back to normal'
-    sleep 100s #make sure that the OCL firmware finish installed, could be improved by checking data received from OCPP
     echo $(($OclVersion)) > ocl_firmware.version
     sshpass -p root scp ocl_firmware.version root@192.168.7.2:/mnt/data/ocl_firmware.version
     sshpass -p root ssh root@192.168.7.2 'mount | grep -q /usr/share/firmware/ocl_firmware.version || mount -o bind /mnt/data/ocl_firmware.version /usr/share/firmware/ocl_firmware.version' 
+    sleep 150s
 else
   sleep 200s #make sure that the OCL firmware finish installed, could be improved by checking data received from OCPP
 fi
