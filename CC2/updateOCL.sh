@@ -7,6 +7,7 @@ fi
 #check version of default OCL firmware
 defaultVersion=$(sshpass -p root ssh root@192.168.7.2 'cat /usr/share/firmware/ocl_firmware.version')
 OclVersion=$(cat ocl_firmware.version)
+echo $defaultVersion
 #fake version number to force OCL update firmware. FIX ME: CCU always force OCL firmware install with OCL dev firmware version
 if [[ $defaultVersion == $OclVersion ]]
   then
