@@ -69,6 +69,7 @@ pipeline {
             steps {
                 timeout(time: 800, unit: 'SECONDS') {
                     dir('CC2') {
+                        script {
                         sh '''#!/usr/bin/env bash
                         ./checkCS.sh
                         rm -rf *.hex* *firmware.version*'''
@@ -88,6 +89,7 @@ pipeline {
                             """
                         }
                         sh './updateOCL.sh'
+                        }
                     }
                 }
             }
