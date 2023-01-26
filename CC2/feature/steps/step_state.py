@@ -6,6 +6,16 @@ import json
 import socket
 import time
 
+def send_command_to_EV_simulator(url):
+    retry = 0
+    assert url is not None, "undefined fault"
+    while retry < 3:
+        resp = requests.get(url)
+        if resp.status_code == 200:
+            break
+        else:
+            retry += 1
+    assert resp.status_code == 200, f"error connecting EV Simulator, status code {resp.status_code}"
 
 def get_status_pack(info) -> Optional[Tuple[str, str]]:
     """
@@ -35,17 +45,8 @@ def set_charging_state(state):
         url = 'http://192.168.17.123/current_state.json?pw=admin&Relay2=0&Relay15=0&Relay7=1&Relay8=1'
     elif state == 'A':
         url = 'http://192.168.17.123/current_state.json?pw=admin&Relay2=1&Relay15=1'
-    retry = 0
-    assert url is not None, "undefined state"
-    while retry < 3:
-        resp = requests.get(url)
-        if resp.status_code == 200:
-            break
-        else:
-            retry += 1
-    assert resp.status_code == 200, f"error connecting EV Simulator, status code {resp.status_code}"
+    send_command_to_EV_simulator(url)
     time.sleep(5)
-
 
 @step('the current state is {state}')
 def step_the_current_state_is(context, state):
@@ -60,16 +61,8 @@ def trigger_fault(context, fault):
         url = 'http://192.168.17.123/current_state.json?pw=admin&Relay5=1&Relay6=1'
     elif fault == 'contactor welded close':
         url = 'http://192.168.17.123/current_state.json?pw=admin&Relay11=1&Relay12=1'
-    retry = 0
-    assert url is not None, "undefined fault"
-    while retry < 3:
-        resp = requests.get(url)
-        if resp.status_code == 200:
-            break
-        else:
-            retry += 1
-    assert resp.status_code == 200, f"error connecting EV Simulator, status code {resp.status_code}"
-    time.sleep(10)
+    send_command_to_EV_simulator(url)
+    time.sleep(1)
 
 @step('EV switch to {state}')
 def step_EV_switch_to(context, state):
@@ -114,29 +107,15 @@ def vendor_error_code_should_be(context, error):
 @step('reset to state A')
 def reset_to_state_A(context):
     url = "http://192.168.17.123/current_state.json?pw=admin&SetAll=16394"
-    retry = 0
-    assert url is not None, "undefined fault"
-    while retry < 3:
-        resp = requests.get(url)
-        if resp.status_code == 200:
-            break
-        else:
-            retry += 1      
-    assert resp.status_code == 200, f"error connecting EV Simulator, status code {resp.status_code}"
+    send_command_to_EV_simulator(url)
     time.sleep(3)
 
 @step('reset test station')
 def reset_test_station(context):
-    url = "http://192.168.17.123/current_state.json?pw=admin&SetAll=0"
-    retry = 0
-    assert url is not None, "undefined fault"
-    while retry < 3:
-        resp = requests.get(url)
-        if resp.status_code == 200:
-            break
-        else:
-            retry += 1
-    assert resp.status_code == 200, f"error connecting EV Simulator, status code {resp.status_code}"
+    url = "http://192.168.17.123/current_state.json?pw=admin&SetAll=8"
+    send_command_to_EV_simulator(url)
+
+
 
 @step('wait for test station to start up')
 def wait_for_test_station_to_start_up(context):

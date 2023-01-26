@@ -36,8 +36,8 @@ Feature: Integration Tests
     
     Scenario: Test contactor welded close
     Given reset to state A
-    And wait for 30 
     When trigger fault contactor welded close
+    And wait for 30
     Then the EVSE should switch to state F
     
     Scenario: Reset test station

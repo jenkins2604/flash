@@ -2,19 +2,15 @@ pipeline {
     agent { label 'pi' }
     parameters {
         booleanParam(name: 'updateOCL', defaultValue: false, description: "Update new software for OCL")
-        string(name: "oclversion", defaultValue: "http://sevikci01.creatorctek.local:8080/job/OCU-multibranch/job/master/lastSuccessfulBuild/artifact/build-ocl/firmware.version",
-        description: "link to ocl version file artifact", trim: true)
-        string(name: "oclhex", defaultValue: "http://sevikci01.creatorctek.local:8080/job/OCU-multibranch/job/master/lastSuccessfulBuild/artifact/build-ocl/src/app/app_ocl.hex", 
-        description: "link to ocl hex file artifact", trim: true)
+        string(name: "branchOCL", defaultValue: 'master', description: "branch of OCL", trim: true)
+        string(name: "OCLhex", defaultValue: 'app_ocl.hex', description: "hex file name", trim: true)
+        string(name: "OCLversion", defaultValue: 'firmware.version', description: "version file name", trim: true)
         booleanParam(name: 'updateCCU', defaultValue: false, description: "Update new software for CCU")
-        string(name: 'branch', defaultValue: 'master', trim: true)
+        string(name: 'branchOEbuild', defaultValue: 'master', trim: true, , description: "oe build branch to test")
         string(name: 'CCUbinaryFileName', defaultValue: 'upgrade-ccu-dev.bin', trim: true)
         string(name: 'CCUversionFileName', defaultValue: 'version-ccu-dev-image', trim: true)
         string(name: "targetEnvironment", defaultValue: "default", description: "Pipeline name")
         string(name: "buildNumber", defaultValue: "default", description: "Pipeline build number")
-    }
-    triggers {
-        upstream(upstreamProjects: params.targetEnvironment, threshold: hudson.model.Result.SUCCESS)
     }
     stages {
         stage('Check out CCU artifact') {
@@ -39,9 +35,9 @@ pipeline {
                         echo "Push from a build pipeline"
                         step ([$class: 'CopyArtifact',
                             projectName: params.targetEnvironment,
-                            filter: "deploy-ccu/upgrade-ccu-dev.bin, deploy-ccu/version",
+                            filter: "deploy-ccu/${params.binaryFileName}, deploy-ccu/${params.versionFileName}",
                             selector: specific(params.buildNumber),
-                            target: '']);
+                            target: 'CC2']);
                         sh """
                             cd CC2
                             mv deploy-ccu/${params.CCUbinaryFileName} upgrade.bin
@@ -72,17 +68,27 @@ pipeline {
             when { environment name: 'updateOCL', value: 'true' }
             steps {
                 timeout(time: 800, unit: 'SECONDS') {
-                    echo "${params.oclversion} "
-                    sh """#!/usr/bin/env bash
-                    ./CC2/checkCS.sh
-                    cd CC2
-                    rm -rf *.hex* *firmware.version*
-                    wget ${params.oclversion} -O ocl_firmware.version
-                    if [ \$? -ne 0 ]; then exit 1; fi
-                    wget ${params.oclhex} -O ocl_firmware.hex
-                    if [ \$? -ne 0 ]; then exit 1; fi
-                    ./updateOCL.sh
-                    """
+                    dir('CC2') {
+                        sh '''#!/usr/bin/env bash
+                        ./checkCS.sh
+                        rm -rf *.hex* *firmware.version*'''
+                        if (params.branchOCL == 'master') {
+                            sh """
+                            wget http://sevikci01.creatorctek.local:8080/job/OCU-multibranch/job/master/lastSuccessfulBuild/artifact/build-ocl/src/app/${params.OCLhex} -O ocl_firmware.hex
+                            if [ \$? -ne 0 ]; then exit 1; fi
+                            wget http://sevikci01.creatorctek.local:8080/job/OCU-multibranch/job/master/lastSuccessfulBuild/artifact/build-ocl/${params.OCLversion}  -O ocl_firmware.version
+                            if [ \$? -ne 0 ]; then exit 1; fi
+                            """
+                        } else {
+                            sh """
+                            wget http://sevikci01.creatorctek.local:8080/job/OCU-multibranch/job/${params.branchOCL}/lastSuccessfulBuild/artifact/main_ocl.hex -O ocl_firmware.hex
+                            if [ \$? -ne 0 ]; then exit 1; fi
+                            wget http://sevikci01.creatorctek.local:8080/job/OCU-multibranch/job/${params.branchOCL}/lastSuccessfulBuild/artifact/firmware.version  -O ocl_firmware.version
+                            if [ \$? -ne 0 ]; then exit 1; fi
+                            """
+                        }
+                        sh './updateOCL.sh'
+                    }
                 }
             }
         }
