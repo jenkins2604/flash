@@ -10,6 +10,7 @@ OclVersion=$(cat ocl_firmware.version)
 #fake version number to force OCL update firmware. FIX ME: CCU always force OCL firmware install with OCL dev firmware version
 if [[ $defaultVersion == $OclVersion ]]
   then
+    echo 'same firmware version, forcing OCL to update'
     echo $(($OclVersion+1)) > ocl_firmware.version
 fi
 
@@ -26,6 +27,7 @@ echo loading...
 
 if [[ $defaultVersion == $OclVersion ]]
   then
+    echo 'switch version back to normal'
     sleep 100s #make sure that the OCL firmware finish installed, could be improved by checking data received from OCPP
     echo $(($OclVersion)) > ocl_firmware.version
     sshpass -p root scp ocl_firmware.version root@192.168.7.2:/mnt/data/ocl_firmware.version
