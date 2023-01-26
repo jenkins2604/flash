@@ -69,26 +69,27 @@ pipeline {
             steps {
                 timeout(time: 800, unit: 'SECONDS') {
                     dir('CC2') {
-                        script {
                         sh '''#!/usr/bin/env bash
                         ./checkCS.sh
-                        rm -rf *.hex* *firmware.version*'''
-                        if (params.branchOCL == 'master') {
-                            sh """
-                            wget http://sevikci01.creatorctek.local:8080/job/OCU-multibranch/job/master/lastSuccessfulBuild/artifact/build-ocl/src/app/${params.OCLhex} -O ocl_firmware.hex
+                        rm -rf *.hex* *firmware.version*
+                        '''
+                        sh """
+                        branch=$(echo ${params.branchOCL} | sed "s/\//%252F/g")
+                        echo 'branch is $branch'
+                        wget http://sevikci01.creatorctek.local:8080/job/OCU-multibranch/job/${branch}/lastSuccessfulBuild/artifact/build-ocl/src/app/${params.OCLhex} -O ocl_firmware.hex
+                        if [ \$? -ne 0 ]
+                        then
+                            wget http://sevikci01.creatorctek.local:8080/job/OCU-multibranch/job/${branch}/lastSuccessfulBuild/artifact/main_ocl.hex -O ocl_firmware.hex
                             if [ \$? -ne 0 ]; then exit 1; fi
-                            wget http://sevikci01.creatorctek.local:8080/job/OCU-multibranch/job/master/lastSuccessfulBuild/artifact/build-ocl/${params.OCLversion}  -O ocl_firmware.version
+                        fi
+                        wget http://sevikci01.creatorctek.local:8080/job/OCU-multibranch/job/${branch}/lastSuccessfulBuild/artifact/build-ocl/${params.OCLversion}  -O ocl_firmware.version
+                        if [ \$? -ne 0 ]
+                        then
+                            wget wget http://sevikci01.creatorctek.local:8080/job/OCU-multibranch/job/${branch}/lastSuccessfulBuild/artifact/firmware.version  -O ocl_firmware.version
                             if [ \$? -ne 0 ]; then exit 1; fi
-                            """
-                        } else {
-                            sh """
-                            wget http://sevikci01.creatorctek.local:8080/job/OCU-multibranch/job/${params.branchOCL}/lastSuccessfulBuild/artifact/main_ocl.hex -O ocl_firmware.hex
-                            if [ \$? -ne 0 ]; then exit 1; fi
-                            wget http://sevikci01.creatorctek.local:8080/job/OCU-multibranch/job/${params.branchOCL}/lastSuccessfulBuild/artifact/firmware.version  -O ocl_firmware.version
-                            if [ \$? -ne 0 ]; then exit 1; fi
-                            """
-                        }
-                        sh './updateOCL.sh'
+                        fi
+                        """
+                        //sh './updateOCL.sh'
                         }
                     }
                 }
