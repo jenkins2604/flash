@@ -78,9 +78,11 @@ pipeline {
                         // branch=${params.branchOCL} 
                         // echo ${branch}
                         // """
-                        sh """
-                            params.branchOCL = params.branchOCL.replaceAll(("/", "%252F"))
+                        script {
+                            params.branchOCL = "aaaa"
                             echo params.branchOCL
+                        }
+                        sh """
                             wget http://sevikci01.creatorctek.local:8080/job/OCU-multibranch/job/${params.branchOCL}/lastSuccessfulBuild/artifact/build-ocl/src/app/${params.OCLhex} -O ocl_firmware.hex
                             if [ \$? -ne 0 ]
                             then
