@@ -31,6 +31,7 @@ Feature: Integration Tests
     Given reset to state A
     And the current state is C
     When trigger fault residue current
+    And wait for 5
     Then the EVSE should switch to state F
     And vendor error code should be OcuErrorRCMDC
     
@@ -39,7 +40,4 @@ Feature: Integration Tests
     When trigger fault contactor welded close
     And wait for 30
     Then the EVSE should switch to state F
-    
-    Scenario: Reset test station
-    Then reset test station
     

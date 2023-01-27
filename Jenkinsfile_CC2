@@ -6,9 +6,9 @@ pipeline {
         string(name: "OCLhex", defaultValue: 'app_ocl.hex', description: "hex file name", trim: true)
         string(name: "OCLversion", defaultValue: 'firmware.version', description: "version file name", trim: true)
         booleanParam(name: 'updateCCU', defaultValue: false, description: "Update new software for CCU")
-        string(name: 'branchOEbuild', defaultValue: 'master', trim: true, , description: "oe build branch to test")
-        string(name: 'CCUbinaryFileName', defaultValue: 'upgrade-ccu-dev.bin', trim: true)
-        string(name: 'CCUversionFileName', defaultValue: 'version-ccu-dev-image', trim: true)
+        string(name: 'branchCCU', defaultValue: 'master', trim: true, , description: "oe build branch to test")
+        string(name: 'ccuBinary', defaultValue: 'upgrade-ccu-dev.bin', trim: true)
+        string(name: 'ccuVersion', defaultValue: 'version-ccu-dev-image', trim: true)
         string(name: "targetEnvironment", defaultValue: "default", description: "Pipeline name")
         string(name: "buildNumber", defaultValue: "default", description: "Pipeline build number")
     }
@@ -26,22 +26,22 @@ pipeline {
                         echo "Take the latest successful from oe-build pipeline"
                         sh """
                           cd CC2
-                          wget http://sevikci01.creatorctek.local:8080/job/oe-build/job/${params.branch}/lastSuccessfulBuild/artifact/deploy-ccu/${params.CCUbinaryFileName} -O upgrade.bin
+                          wget http://sevikci01.creatorctek.local:8080/job/oe-build/job/${params.branchCCU}/lastSuccessfulBuild/artifact/deploy-ccu/${params.ccuBinary} -O upgrade.bin
                           if [ \$? -ne 0 ]; then exit 1; fi
-                          wget http://sevikci01.creatorctek.local:8080/job/oe-build/job/${params.branch}/lastSuccessfulBuild/artifact/deploy-ccu/${params.CCUversionFileName} -O version
+                          wget http://sevikci01.creatorctek.local:8080/job/oe-build/job/${params.branchCCU}/lastSuccessfulBuild/artifact/deploy-ccu/${params.ccuVersion} -O version
                           if [ \$? -ne 0 ]; then exit 1; fi
                         """
                     } else {
                         echo "Push from a build pipeline"
                         step ([$class: 'CopyArtifact',
                             projectName: params.targetEnvironment,
-                            filter: "deploy-ccu/${params.binaryFileName}, deploy-ccu/${params.versionFileName}",
+                            filter: "deploy-ccu/${params.ccuBinary}, deploy-ccu/${params.ccuVersion}",
                             selector: specific(params.buildNumber),
                             target: 'CC2']);
                         sh """
                             cd CC2
-                            mv deploy-ccu/${params.CCUbinaryFileName} upgrade.bin
-                            mv deploy-ccu/${params.CCUversionFileName} version
+                            mv deploy-ccu/${params.ccuBinary} upgrade.bin
+                            mv deploy-ccu/${params.ccuBinary} version
                         """
                     }
 
@@ -72,9 +72,13 @@ pipeline {
                         sh '''#!/usr/bin/env bash
                         ./checkCS.sh
                         rm -rf *.hex* *firmware.version*
+                        
                         '''
+                        sh """ branch=${params.branchOCL} 
+                        echo $branch
+                        """
                         sh """
-                            
+                        echo $branch
                             wget http://sevikci01.creatorctek.local:8080/job/OCU-multibranch/job/${params.branchOCL}/lastSuccessfulBuild/artifact/build-ocl/src/app/${params.OCLhex} -O ocl_firmware.hex
                             if [ \$? -ne 0 ]
                             then
@@ -88,7 +92,7 @@ pipeline {
                                 if [ \$? -ne 0 ]; then exit 1; fi
                             fi
                         """
-                        //sh './updateOCL.sh'
+                        sh './updateOCL.sh'
                     }
                 }
             }
