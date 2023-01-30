@@ -48,13 +48,13 @@ pipeline {
                 }
             }
         }
-        stage('Startup test station') {
-            steps {
-                    timeout(time: 800, unit: 'SECONDS') {
-                        sh './CC2/startupCentralSystem.sh'
-                    }
-            }
-        }
+        // stage('Startup test station') {
+        //     steps {
+        //             timeout(time: 800, unit: 'SECONDS') {
+        //                 sh './CC2/startupCentralSystem.sh'
+        //             }
+        //     }
+        // }
         stage('Trigger CCU firmware update') {
             when { environment name: 'updateCCU', value: 'true' }
             steps {
