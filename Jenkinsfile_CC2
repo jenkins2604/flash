@@ -76,7 +76,8 @@ pipeline {
                         sh """#!/bin/bash
                             if ${params.branchOCL.contains('/')}
                             then 
-                                echo 'aaaaaaaaa'
+                                a = 'aaaaaaaaaaaaaa'
+                                echo ${a}
                                 temp = "job/${params.branchOCL.replace('/', '%252F')}"
                                 
                             fi
