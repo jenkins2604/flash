@@ -77,6 +77,7 @@ pipeline {
                             if ${params.branchOCL.contains('/')} {
                                 echo 'aaaaaaaaa'
                             }
+                            foo=${params.branchOCL}
                             wget http://sevikci01.creatorctek.local:8080/job/OCU-multibranch/job/${params.branchOCL}/lastSuccessfulBuild/artifact/build-ocl/src/app/${params.OCLhex} -O ocl_firmware.hex
                             if [ \$? -ne 0 ]
                             then
