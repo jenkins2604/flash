@@ -72,9 +72,12 @@ pipeline {
                         sh '''#!/usr/bin/env bash
                         ./checkCS.sh
                         rm -rf *.hex* *firmware.version*
-                        a='aaaaaaaa'
+                        a="${params.branchOCL.replace('/', '%252F')}"
                         echo $a
                         '''
+                        script{
+                        temp = params.branchOCL.replace('/', '%252F')
+                        print temp
                         sh """
                             if ${params.branchOCL.contains('/')}
                             then 
@@ -98,6 +101,7 @@ pipeline {
                             fi
                         """
                         sh './updateOCL.sh'
+                        }
                     }
                 }
             }
