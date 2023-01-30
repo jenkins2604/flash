@@ -72,8 +72,7 @@ pipeline {
                         sh '''#!/usr/bin/env bash
                         ./checkCS.sh
                         rm -rf *.hex* *firmware.version*
-                        a="${params.branchOCL.replace('/', '%252F')}"
-                        echo $a
+                       
                         '''
                         script{
                         temp = params.branchOCL.replace('/', '%252F')
@@ -83,7 +82,6 @@ pipeline {
                             then 
                                 
                                 echo 'aaaaaaaaa'
-                                temp = "job/${params.branchOCL.replace('/', '%252F')}"
                                 
                             fi
                             
