@@ -74,18 +74,24 @@ pipeline {
                         rm -rf *.hex* *firmware.version*
                         '''
                         script{
-                        if (params.branchOCL.contains('/')) { 
-                            OCL = "view/change-requests/job/" + params.branchOCL.replace('/', '%252F')
-                        } else {
-                            OCL = params.branchOCL
+                            if (params.branchOCL.contains('/')) {
+                                OCL = "view/change-requests/job/" + params.branchOCL.replace('/', '%252F')
+                            } else {
+                                OCL = params.branchOCL
+                            }
+                            if (params.branchOCL == 'master') {
+                                sh """
+                                wget http://sevikci01.creatorctek.local:8080/job/OCU-multibranch/job/${OCL}/lastSuccessfulBuild/artifact/build-ocl/src/app/${params.OCLhex} -O ocl_firmware.hex
+                                wget http://sevikci01.creatorctek.local:8080/job/OCU-multibranch/job/${OCL}/lastSuccessfulBuild/artifact/build-ocl/${params.OCLversion}  -O ocl_firmware.version
+                                """
+                            } else {
+                                sh """
+                                wget http://sevikci01.creatorctek.local:8080/job/OCU-multibranch/job/${OCL}/lastSuccessfulBuild/artifact/main_ocl.hex -O ocl_firmware.hex
+                                wget wget http://sevikci01.creatorctek.local:8080/job/OCU-multibranch/job/${OCL}/lastSuccessfulBuild/artifact/firmware.version  -O ocl_firmware.version
+                                """
+                            }
                         }
-                        }
-                        sh """
-                            wget http://sevikci01.creatorctek.local:8080/job/OCU-multibranch/job/${OCL}/lastSuccessfulBuild/artifact/build-ocl/src/app/${params.OCLhex} -O ocl_firmware.hex
-                            
-                        """
-                        //sh './updateOCL.sh'
-                        
+                        sh './updateOCL.sh'
                     }
                 }
             }
