@@ -85,6 +85,7 @@ pipeline {
                             if [ \$? -ne 0 ]
                             then
                                 wget http://sevikci01.creatorctek.local:8080/job/OCU-multibranch/job/${OCL}/lastSuccessfulBuild/artifact/main_ocl.hex -O ocl_firmware.hex
+                                echo 'aaaaaaaa'
                                 if [ \$? -ne 0 ]; then exit 1; fi
                             fi
                             wget http://sevikci01.creatorctek.local:8080/job/OCU-multibranch/job/${OCL}/lastSuccessfulBuild/artifact/build-ocl/${params.OCLversion}  -O ocl_firmware.version
