@@ -82,7 +82,8 @@ pipeline {
                         script {
                            env.branchOCL = params.branchOCL
                             echo env.branchOCL
-                            env.branchOCL.replace('//','%252F')
+                            env.branchOCL.replace('/','%252F')
+                            echo env.branchOCL
                         }
                         sh """
                             wget http://sevikci01.creatorctek.local:8080/job/OCU-multibranch/job/${env.branchOCL}/lastSuccessfulBuild/artifact/build-ocl/src/app/${params.OCLhex} -O ocl_firmware.hex
