@@ -91,17 +91,13 @@ pipeline {
                             wget http://sevikci01.creatorctek.local:8080/job/OCU-multibranch/job/${OCL}/lastSuccessfulBuild/artifact/main_ocl.hex -O ocl_firmware.hex
                             """
                         }
-                        sh '''
+                        sh """
                         echo 'aaa' || echo 'bbb'
-                            
-                            ||
-                            wget http://sevikci01.creatorctek.local:8080/job/OCU-multibranch/job/${OCL}/lastSuccessfulBuild/artifact/main_ocl.hex -O ocl_firmware.hex
 
                             wget http://sevikci01.creatorctek.local:8080/job/OCU-multibranch/job/${OCL}/lastSuccessfulBuild/artifact/build-ocl/${params.OCLversion}  -O ocl_firmware.version
                             ||
                                 wget wget http://sevikci01.creatorctek.local:8080/job/OCU-multibranch/job/${OCL}/lastSuccessfulBuild/artifact/firmware.version  -O ocl_firmware.version
-                                
-                        '''
+                        """
                         }
                         sh './updateOCL.sh'
                     }
