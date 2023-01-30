@@ -5,6 +5,6 @@ sleep 50s
 python3 CC2/CentralSystem.py &
 sleep 10s
 ./CC2/checkCS.sh
-sleep 150s #make sure that the OCL firmware finish installed if any, could be improved by reading info from OCPP
+sleep 200s #make sure that the OCL firmware finish installed if any, could be improved by reading info from OCPP
 cd CC2
 python3 -m http.server 8000 &

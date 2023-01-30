@@ -32,10 +32,10 @@ if [[ $defaultVersion == $OclVersion ]]
     echo 'switch version back to normal'
     echo $(($OclVersion)) > ocl_firmware.version
     sshpass -p root scp ocl_firmware.version root@192.168.7.2:/mnt/data/ocl_firmware.version
-    sshpass -p root ssh root@192.168.7.2 'mount | grep -q /usr/share/firmware/ocl_firmware.version || mount -o bind /mnt/data/ocl_firmware.version /usr/share/firmware/ocl_firmware.version' 
-    sleep 120s
+    sshpass -p root ssh root@192.168.7.2 'umount /usr/share/firmware/ocl_firmware.version' 
+    sleep 150s
 else
-  sleep 180s #make sure that the OCL firmware finish installed, could be improved by checking data received from OCPP
+  sleep 200s #make sure that the OCL firmware finish installed, could be improved by checking data received from OCPP
 fi
 
 #Restart OCL by engage Relay3 (unplug power supply to OCL) and then disengage Relay3 (plug power supply to OCL)  then restart CCU
