@@ -16,7 +16,9 @@ if [[ $defaultVersion == $OclVersion ]]
 fi
 
 sshpass -p root scp ocl_firmware.hex root@192.168.7.2:/mnt/data/ocl_firmware.hex
+if [ \$? -ne 0 ]; then exit 1; fi
 sshpass -p root scp ocl_firmware.version root@192.168.7.2:/mnt/data/ocl_firmware.version
+if [ \$? -ne 0 ]; then exit 1; fi
 sleep 1s
 sshpass -p root ssh -t root@192.168.7.2 << EOF 
   mount | grep -q /usr/share/firmware/ocl_firmware.version || mount -o bind /mnt/data/ocl_firmware.version /usr/share/firmware/ocl_firmware.version
@@ -33,6 +35,7 @@ if [[ $defaultVersion == $OclVersion ]]
     echo $(($OclVersion)) > ocl_firmware.version
     sshpass -p root scp ocl_firmware.version root@192.168.7.2:/mnt/data/ocl_firmware.version
     sshpass -p root ssh root@192.168.7.2 'umount /usr/share/firmware/ocl_firmware.version' 
+    if [ \$? -ne 0 ]; then exit 1; fi
     sleep 170s
 else
   sleep 200s #make sure that the OCL firmware finish installed, could be improved by checking data received from OCPP
