@@ -72,7 +72,6 @@ pipeline {
                         sh '''#!/usr/bin/env bash
                         ./checkCS.sh
                         rm -rf *.hex* *firmware.version*
-                       
                         '''
                         script{
                         if (params.branchOCL.contains('/')) { 
@@ -83,18 +82,9 @@ pipeline {
                         }
                         sh """
                             wget http://sevikci01.creatorctek.local:8080/job/OCU-multibranch/job/${OCL}/lastSuccessfulBuild/artifact/build-ocl/src/app/${params.OCLhex} -O ocl_firmware.hex
-                            if [ \$? -ne 0 ]
-                            then
-                                echo 'aaaaaaaa'
-                            fi
-                            wget http://sevikci01.creatorctek.local:8080/job/OCU-multibranch/job/${OCL}/lastSuccessfulBuild/artifact/build-ocl/${params.OCLversion}  -O ocl_firmware.version
-                            if [ \$? -ne 0 ]
-                            then
-                                wget wget http://sevikci01.creatorctek.local:8080/job/OCU-multibranch/job/${OCL}/lastSuccessfulBuild/artifact/firmware.version  -O ocl_firmware.version
-                                if [ \$? -ne 0 ]; then exit 1; fi
-                            fi
+                            
                         """
-                        sh './updateOCL.sh'
+                        //sh './updateOCL.sh'
                         
                     }
                 }
