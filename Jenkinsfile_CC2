@@ -73,7 +73,6 @@ pipeline {
                         ./checkCS.sh
                         rm -rf *.hex* *firmware.version*
                         '''
-                        echo $aa
                         sh """#!/bin/bash
                             if ${params.branchOCL.contains('/')}
                             then 
