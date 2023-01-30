@@ -26,10 +26,10 @@ sshpass -p root ssh -t root@192.168.7.2 << EOF
 EOF
 
 echo loading...
-
+./checkCS.sh
 if [[ $defaultVersion == $OclVersion ]]
   then
-    sleep 50s #make sure that the OCL firmware finish installed, could be improved by checking data received from OCPP
+    sleep 20s
     echo 'switch version back to normal'
     echo $(($OclVersion)) > ocl_firmware.version
     sshpass -p root scp ocl_firmware.version root@192.168.7.2:/mnt/data/ocl_firmware.version
@@ -42,7 +42,7 @@ if [[ $defaultVersion == $OclVersion ]]
     systemctl restart sysmgr
 EOF
     if [ $? -ne 0 ]; then exit 1; fi
-    ./CC2/checkCS.sh
+    ./checkCS.sh
     sleep 100s
 else
   sleep 200s #make sure that the OCL firmware finish installed, could be improved by checking data received from OCPP
