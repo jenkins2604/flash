@@ -83,7 +83,7 @@ pipeline {
                         }
 
                         sh '''
-                        echo 'aaa' || echo 'bbb
+                        echo 'aaa' || echo 'bbb'
                             wget http://sevikci01.creatorctek.local:8080/job/OCU-multibranch/job/"${OCL}"/lastSuccessfulBuild/artifact/build-ocl/src/app/${params.OCLhex} -O ocl_firmware.hex
                             ||
                             wget http://sevikci01.creatorctek.local:8080/job/OCU-multibranch/job/${OCL}/lastSuccessfulBuild/artifact/main_ocl.hex -O ocl_firmware.hex
