@@ -14,9 +14,9 @@ do
 
     if [[ $re == "Installed" ]]
     then
-        echo reboot|nc -w 10 localhost 8001
+        echo reboot|nc -w 1 localhost 8001
         echo Installed
-        exit 0
+        break
     elif [[ $re == "NA" ]] || [[ $re == "DownloadFailed" ]] || [[ $re == "InstallationFailed" ]]
     then
         echo Failed
