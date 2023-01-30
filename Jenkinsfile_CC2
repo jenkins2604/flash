@@ -80,7 +80,7 @@ pipeline {
                         // echo ${branch}
                         // """
                         script {
-                            params.branchOCL = "aaaa"
+                           
                             echo params.branchOCL
                         }
                         sh """
