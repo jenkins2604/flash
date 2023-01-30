@@ -35,14 +35,14 @@ if [[ $defaultVersion == $OclVersion ]]
     sshpass -p root scp ocl_firmware.version root@192.168.7.2:/mnt/data/ocl_firmware.version
     sshpass -p root ssh root@192.168.7.2 'mount -o bind /mnt/data/ocl_firmware.version /usr/share/firmware/ocl_firmware.version'
     sshpass -p root ssh root@192.168.7.2 'cat /usr/share/firmware/ocl_firmware.version'
-    sleep 120s
+    sleep 50s
     sshpass -p root ssh -t root@192.168.7.2 << EOF 
     systemctl stop outletmanager
     sleep 5s
     systemctl restart sysmgr
 EOF
     if [ $? -ne 0 ]; then exit 1; fi
-    sleep 100s
+    sleep 60s
 else
   sleep 200s #make sure that the OCL firmware finish installed, could be improved by checking data received from OCPP
 fi
