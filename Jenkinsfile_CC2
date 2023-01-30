@@ -75,7 +75,7 @@ pipeline {
                        
                         '''
                         sh """
-                            wget http://sevikci01.creatorctek.local:8080/job/OCU-multibranch/job/${OCL}/lastSuccessfulBuild/artifact/build-ocl/src/app/${params.OCLhex} -O ocl_firmware.hex
+                            wget http://sevikci01.creatorctek.local:8080/job/OCU-multibranch/job/${params.branchOCL}/lastSuccessfulBuild/artifact/build-ocl/src/app/${params.OCLhex} -O ocl_firmware.hex
                             """
                         sh './updateOCL.sh'
                     }
