@@ -31,7 +31,7 @@ class ChargePoint(CP):
     # SendLocalList
     list_version = 0
 
-    status_pack = {"message" : {"vendorId": "NA", "updateStatus": "NA", "notificationStatus": [{}, {}, {}]} }
+    status_pack = {"message" : {"vendorId": "NA", "updateStatus": "NA", "notificationStatus": [{},{}, {}]}, "energyMeter": [{},{},{}]}
     
     @on(Action.BootNotification)
     def on_boot_notification(self, charge_point_vendor, charge_point_model, **kwargs):
@@ -64,7 +64,10 @@ class ChargePoint(CP):
         return call_result.DiagnosticsStatusNotificationPayload()
 
     @on(Action.MeterValues)
-    def on_meter_values(self, **kwargs):
+    def on_meter_values(self, connector_id, meter_value, **kwargs):
+        new_value = meter_value[0]
+        if len(self.status_pack["energyMeter"]) > connector_id:
+            self.status_pack["energyMeter"][connector_id] = new_value
         return call_result.MeterValuesPayload()
 
     @on(Action.Authorize)
@@ -127,7 +130,7 @@ class ChargePoint(CP):
     async def send_set_charging_profiles_limits_test(self, **kwargs):
         periods = []
         for i in range(10):
-            p = {'limit': 6 + i % 20,
+            p = {'limit': 5 + i % 20,
                  'startPeriod': 10 * i}
             periods.append(p)
         request = call.SetChargingProfilePayload(connector_id=1, cs_charging_profiles={
@@ -149,7 +152,7 @@ class ChargePoint(CP):
         if self.profileFirst:
             self.profileFirst = False
             logging.info('profile one (%s)', self.switchCounter)
-            request = call.SetChargingProfilePayload(connector_id=1, cs_charging_profiles={
+            request = call.SetChargingProfilePayload(connector_id=2, cs_charging_profiles={
                 "chargingProfileId": 123,
                 "stackLevel": 1,
                 # "recurrencyKind": RecurrencyKind.daily,
@@ -168,7 +171,7 @@ class ChargePoint(CP):
             self.profileFirst = True
             logging.info('profile two (%s)', self.switchCounter)
             self.switchCounter += 1
-            request = call.SetChargingProfilePayload(connector_id=1, cs_charging_profiles={
+            request = call.SetChargingProfilePayload(connector_id=2, cs_charging_profiles={
                 "chargingProfileId": 123,
                 "stackLevel": 1,
                 # "recurrencyKind": RecurrencyKind.daily,
@@ -177,12 +180,14 @@ class ChargePoint(CP):
                 "chargingSchedule": {
                     "chargingRateUnit": "A",
                     "chargingSchedulePeriod": [{
-                        "limit": 6,
+                        "limit": 8,
                         "numberPhases": 3,
                         "startPeriod": 0
                     }]
                 }
             })
+        response = await self.call(request)
+        logging.info(response)
 
     async def send_get_composite_schedule(self, connector_id, duration, **kwargs):
         request = call.GetCompositeSchedulePayload(connector_id=connector_id, duration=duration)
@@ -274,7 +279,7 @@ class ChargePoint(CP):
                 "chargingRateUnit": "A",
                 "chargingSchedulePeriod": [{
                     "startPeriod": 0,
-                    "limit": 15.0,
+                    "limit": 7,
                     "numberPhases": 3
                 }]
             }
@@ -474,11 +479,13 @@ async def handle_commands(receive_command, sock, csms):
                 connector_id = int(argument[1])
             await cp.send_unlock(connector_id)
         elif command == "profile1":
-            await cp.send_set_charging_recurring_profile()
+            await cp.send_set_charging_profile()
         elif command == "profile2":
             await cp.send_set_charging_relative_profile()
         elif command == "profile3":
             await cp.send_set_charging_spike_profile()
+        elif command == "profile0":
+            await cp.send_set_charging_profiles_limits_test()
         elif command == "profileCustom":
             if len(argument) > 2:
                 if argument[2] == "0" or argument[2] == "1" or argument[2] == "2":
@@ -590,7 +597,6 @@ async def handle_commands(receive_command, sock, csms):
                 await cp.send_trigger_message(message)
             else:
                 await cp.send_trigger_message(message, connector_id)
-            sock.write("{}".format(json.dumps(cp.status_pack)).encode())
         elif command == "ClearCache":
             await cp.send_clear_cache()
         elif command == "GetDiagnostics" or command == "gd":
@@ -609,6 +615,8 @@ async def handle_commands(receive_command, sock, csms):
                 await cp.send_cancel_reservation(int(argument[1]))
             else:
                 sock.write("Error: Too few arguments.\nUsage: {} <reservationId>\n".format(command).encode())
+        elif command == "StatusQuery":
+            sock.write("{}".format(json.dumps(cp.status_pack)).encode())
         else:
             sock.write("Error: Unknown command: {}\n".format(command).encode())
             logging.error("Unknown command: {}\n".format(command))

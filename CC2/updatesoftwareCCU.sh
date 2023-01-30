@@ -1,4 +1,10 @@
 #!/usr/bin/env bash
+
+if [ ! -f "upgrade.bin"  ] ||  [ ! -f "version" ]
+then
+	echo "Required files are missing."
+  exit 1
+fi
 #loop until firmware installation is either finished or failed
 echo Update|nc -w 10 localhost 8001
 while true

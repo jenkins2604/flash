@@ -27,9 +27,7 @@ pipeline {
                         sh """
                           cd CC2
                           wget http://sevikci01.creatorctek.local:8080/job/oe-build/job/${params.branchCCU}/${params.buildNumber}/artifact/deploy-ccu/${params.ccuBinary} -O upgrade.bin
-                          if [ \$? -ne 0 ]; then exit 1; fi
                           wget http://sevikci01.creatorctek.local:8080/job/oe-build/job/${params.branchCCU}/${params.buildNumber}/artifact/deploy-ccu/${params.ccuVersion} -O version
-                          if [ \$? -ne 0 ]; then exit 1; fi
                         """
                     } else {
                         echo "Push from a build pipeline"
@@ -98,36 +96,36 @@ pipeline {
                 }
             }
         }
-        // stage('Run smoke test') {
-        //     steps {
-        //         timeout(time: 500, unit: 'SECONDS') {
-        //             script {
-        //                 sh './CC2/checkCS.sh'
-        //                 if (params.updateCCU == true) {
-        //                     sh '''
-        //                     cd CC2/feature
-        //                     behave -i smoke.feature --junit '''
-        //                 }
-        //                 else {
-        //                     sh '''
-        //                     cd CC2/feature
-        //                     behave -i smoke.feature --tags="not @ccu" --junit '''
-        //                 }
-        //             }
-        //         }
-        //     }
-        // }
-        // stage('Run integration test') {
-        //     steps {
-        //         echo 'RUN'
-        //         timeout(time: 500, unit: 'SECONDS') {
-        //             sh '''#!/usr/bin/env bash
-        //                 cd CC2/feature
-        //                 behave -i integration.feature --junit
-        //             '''
-        //         }
-        //     }
-        // }
+        stage('Run smoke test') {
+            steps {
+                timeout(time: 500, unit: 'SECONDS') {
+                    script {
+                        sh './CC2/checkCS.sh'
+                        if (params.updateCCU == true) {
+                            sh '''
+                            cd CC2/feature
+                            behave -i smoke.feature --junit '''
+                        }
+                        else {
+                            sh '''
+                            cd CC2/feature
+                            behave -i smoke.feature --tags="not @ccu" --junit '''
+                        }
+                    }
+                }
+            }
+        }
+        stage('Run integration test') {
+            steps {
+                echo 'RUN'
+                timeout(time: 500, unit: 'SECONDS') {
+                    sh '''#!/usr/bin/env bash
+                        cd CC2/feature
+                        behave -i integration.feature --junit
+                    '''
+                }
+            }
+        }
     }
     post {
         always {
