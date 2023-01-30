@@ -78,17 +78,17 @@ pipeline {
                         if (params.branchOCL.contains('/')) { 
                             OCL = "view/change-requests/job/" + params.branchOCL.replace('/', '%252F')
                         } else {
-                            OCL = params.branchOCL
+                            OCL = "job/" + params.branchOCL
                         }
                         
                         try {
                             sh """
-                            wget http://sevikci01.creatorctek.local:8080/job/OCU-multibranch/job/${OCL}/lastSuccessfulBuild/artifact/build-ocl/src/app/${params.OCLhex}  -O ocl_firmware.version
+                            wget http://sevikci01.creatorctek.local:8080/job/OCU-multibranch/${OCL}/lastSuccessfulBuild/artifact/build-ocl/src/app/${params.OCLhex}  -O ocl_firmware.version
                             """
                         } catch (Exception e) {
                             echo e.toString()
                             sh """
-                            wget http://sevikci01.creatorctek.local:8080/job/OCU-multibranch/job/${OCL}/lastSuccessfulBuild/artifact/main_ocl.hex -O ocl_firmware.hex
+                            wget http://sevikci01.creatorctek.local:8080/job/OCU-multibranch/${OCL}/lastSuccessfulBuild/artifact/main_ocl.hex -O ocl_firmware.hex
                             """
                         }
                         sh """
