@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 while true
 do
-    re=$(echo tm fsn|nc -w 20 localhost 8001)
+    re=$(echo tm fsn|nc -w 5 localhost 8001)
     echo $re
     isJson=$(echo $re | jq -r type)
     if [ $? -ne 0 ]

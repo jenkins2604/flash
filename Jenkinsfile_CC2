@@ -26,9 +26,9 @@ pipeline {
                         echo "Take the latest successful from oe-build pipeline"
                         sh """
                           cd CC2
-                          wget http://sevikci01.creatorctek.local:8080/job/oe-build/job/${params.branchCCU}/lastSuccessfulBuild/artifact/deploy-ccu/${params.ccuBinary} -O upgrade.bin
+                          wget http://sevikci01.creatorctek.local:8080/job/oe-build/job/${params.branchCCU}/${params.buildNumber}/artifact/deploy-ccu/${params.ccuBinary} -O upgrade.bin
                           if [ \$? -ne 0 ]; then exit 1; fi
-                          wget http://sevikci01.creatorctek.local:8080/job/oe-build/job/${params.branchCCU}/lastSuccessfulBuild/artifact/deploy-ccu/${params.ccuVersion} -O version
+                          wget http://sevikci01.creatorctek.local:8080/job/oe-build/job/${params.branchCCU}/${params.buildNumber}/artifact/deploy-ccu/${params.ccuVersion} -O version
                           if [ \$? -ne 0 ]; then exit 1; fi
                         """
                     } else {
