@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+echo connecting...
 while true
 do
     re=$(echo quit|nc -q 0 localhost 8001)

@@ -24,9 +24,10 @@ sshpass -p root ssh -t root@192.168.7.2 << EOF
   mount -o bind /mnt/data/ocl_firmware.hex /usr/share/firmware/ocl_firmware.hex
   systemctl restart sysmgr
 EOF
-
-echo loading...
+sleep 10s
 ./checkCS.sh
+echo loading...
+
 if [[ $defaultVersion == $OclVersion ]]
   then
     sleep 20s
@@ -42,8 +43,9 @@ if [[ $defaultVersion == $OclVersion ]]
     systemctl restart sysmgr
 EOF
     if [ $? -ne 0 ]; then exit 1; fi
+    sleep 10s
     ./checkCS.sh
-    sleep 100s
+    sleep 60s
 else
   sleep 200s #make sure that the OCL firmware finish installed, could be improved by checking data received from OCPP
 fi
