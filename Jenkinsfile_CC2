@@ -74,6 +74,8 @@ pipeline {
                         rm -rf *.hex* *firmware.version*
                         branch='aaaaaaaaaaa'
                         '''
+                        echo 'bbbbbb'
+                        echo $branch
                         // sh """ 
                         // branch=${params.branchOCL} 
                         // echo ${branch}
