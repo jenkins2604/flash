@@ -82,7 +82,7 @@ pipeline {
                         script {
                            env.branchOCL = params.branchOCL
                             echo env.branchOCL
-                            env.branchOCL.replaceAll("/","%252F")
+                            env.branchOCL.replaceAll("8","9")
                             echo env.branchOCL
                         }
                         sh """
