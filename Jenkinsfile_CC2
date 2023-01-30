@@ -77,13 +77,11 @@ pipeline {
                         script{
                         temp = params.branchOCL.replace('/', '%252F')
                         print temp
+                        if (params.branchOCL.contains('/')) {
+                            temp = "view/change-requests/job/" + params.branchOCL.replace('/', '%252F')
+                        }
                         sh """
-                            if ${params.branchOCL.contains('/')}
-                            then 
-                                
-                                echo 'aaaaaaaaa'
-                                
-                            fi
+                            
                             
                             wget http://sevikci01.creatorctek.local:8080/job/OCU-multibranch/job/${temp}/lastSuccessfulBuild/artifact/build-ocl/src/app/${params.OCLhex} -O ocl_firmware.hex
                             if [ \$? -ne 0 ]
