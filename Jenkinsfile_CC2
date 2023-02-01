@@ -10,7 +10,7 @@ pipeline {
         string(name: 'ccuBinary', defaultValue: 'upgrade-ccu-dev.bin', trim: true)
         string(name: 'ccuVersion', defaultValue: 'version-ccu-dev-image', trim: true)
         string(name: "targetEnvironment", defaultValue: "default", description: "Pipeline name")
-        string(name: "buildNumber", defaultValue: "default", description: "Pipeline build number")
+        string(name: "buildNumber", defaultValue: "lastSuccessfulBuild", description: "Pipeline build number")
     }
     stages {
         stage('Check out CCU artifact') {
