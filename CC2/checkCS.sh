@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 echo connecting...
+timeout 200 bash -c -- '
 while true
 do
     re=$(echo quit|nc -q 0 localhost 8001)
@@ -10,3 +11,4 @@ do
     else break
     fi
 done
+'

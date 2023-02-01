@@ -31,7 +31,7 @@ class ChargePoint(CP):
     # SendLocalList
     list_version = 0
 
-    status_pack = {"message" : {"vendorId": "NA", "updateStatus": "NA", "notificationStatus": [{},{}, {}]}, "energyMeter": [{},{},{}]}
+    status_pack = {"message" : {"vendorId": "NA", "updateStatus": "NA", "notificationStatus": [{},{}, {}], "energyMeter": [{},{},{}]}}
     
     @on(Action.BootNotification)
     def on_boot_notification(self, charge_point_vendor, charge_point_model, **kwargs):
@@ -65,9 +65,11 @@ class ChargePoint(CP):
 
     @on(Action.MeterValues)
     def on_meter_values(self, connector_id, meter_value, **kwargs):
+        print("meter value id: ")
+        print(connector_id)
         new_value = meter_value[0]
-        if len(self.status_pack["energyMeter"]) > connector_id:
-            self.status_pack["energyMeter"][connector_id] = new_value
+        if len(self.status_pack["message"]["energyMeter"]) > connector_id:
+            self.status_pack["message"]["energyMeter"][connector_id] = new_value
         return call_result.MeterValuesPayload()
 
     @on(Action.Authorize)

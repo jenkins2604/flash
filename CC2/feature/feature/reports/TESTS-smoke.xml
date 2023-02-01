@@ -1,0 +1,21 @@
+<testsuite name="smoke.Smoke Tests" tests="2" errors="0" failures="0" skipped="2" time="0.0" timestamp="2023-01-30T16:18:27.060337" hostname="raspberrypi"><testcase classname="smoke.Smoke Tests" name="Check firmware version" status="skipped" time="0"><skipped /><system-out>
+<![CDATA[
+@scenario.begin
+  Scenario: Check firmware version
+    When comparing the firmware version and git hash id ... skipped in 0.000s
+    Then the firmware version and hash id should match ... skipped in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="smoke.Smoke Tests" name="check status of test station" status="skipped" time="0"><skipped /><system-out>
+<![CDATA[
+@scenario.begin
+  Scenario: check status of test station
+    Then the EVSE should switch to state A ... skipped in 0.000s
+    And error code should be NoError ... skipped in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase></testsuite>

@@ -1,0 +1,190 @@
+<testsuite name="integration.Integration Tests" tests="6" errors="0" failures="6" skipped="0" time="176.241526" timestamp="2023-01-30T16:21:27.239861" hostname="raspberrypi"><testcase classname="integration.Integration Tests" name="change state A to B" status="failed" time="26.608483"><failure type="AssertionError" message="">
+<![CDATA[
+Failing step: Then the EVSE should switch to state B ... failed in 13.026s
+Location: integration.feature:9
+Traceback (most recent call last):
+  File "/home/jenkins/.local/lib/python3.9/site-packages/behave/model.py", line 1329, in run
+    match.run(runner.context)
+  File "/home/jenkins/.local/lib/python3.9/site-packages/behave/matchers.py", line 98, in run
+    self.func(context, *args, **kwargs)
+  File "steps/step_state.py", line 87, in step_the_EVSE_should_switch_to_state
+    assert result is not None
+AssertionError
+
+Captured stdout:
+None]]>
+</failure><system-out>
+<![CDATA[
+@scenario.begin
+  Scenario: change state A to B
+    Given reset to state A ... passed in 3.202s
+    And the current state is A ... passed in 5.192s
+    When EV switch to B ... passed in 5.189s
+    Then the EVSE should switch to state B ... failed in 13.026s
+
+@scenario.end
+--------------------------------------------------------------------------------
+
+Captured stdout:
+None
+
+]]>
+</system-out></testcase><testcase classname="integration.Integration Tests" name="change state B to C" status="failed" time="23.414295"><failure type="AssertionError" message="">
+<![CDATA[
+Failing step: Then the EVSE should switch to state C ... failed in 13.017s
+Location: integration.feature:14
+Traceback (most recent call last):
+  File "/home/jenkins/.local/lib/python3.9/site-packages/behave/model.py", line 1329, in run
+    match.run(runner.context)
+  File "/home/jenkins/.local/lib/python3.9/site-packages/behave/matchers.py", line 98, in run
+    self.func(context, *args, **kwargs)
+  File "steps/step_state.py", line 87, in step_the_EVSE_should_switch_to_state
+    assert result is not None
+AssertionError
+
+Captured stdout:
+None]]>
+</failure><system-out>
+<![CDATA[
+@scenario.begin
+  Scenario: change state B to C
+    Given the current state is B ... passed in 5.194s
+    When EV switch to C ... passed in 5.204s
+    Then the EVSE should switch to state C ... failed in 13.017s
+
+@scenario.end
+--------------------------------------------------------------------------------
+
+Captured stdout:
+None
+
+]]>
+</system-out></testcase><testcase classname="integration.Integration Tests" name="change state C to B" status="failed" time="23.397539"><failure type="AssertionError" message="">
+<![CDATA[
+Failing step: Then the EVSE should switch to state B ... failed in 13.020s
+Location: integration.feature:19
+Traceback (most recent call last):
+  File "/home/jenkins/.local/lib/python3.9/site-packages/behave/model.py", line 1329, in run
+    match.run(runner.context)
+  File "/home/jenkins/.local/lib/python3.9/site-packages/behave/matchers.py", line 98, in run
+    self.func(context, *args, **kwargs)
+  File "steps/step_state.py", line 87, in step_the_EVSE_should_switch_to_state
+    assert result is not None
+AssertionError
+
+Captured stdout:
+None]]>
+</failure><system-out>
+<![CDATA[
+@scenario.begin
+  Scenario: change state C to B
+    Given the current state is C ... passed in 5.187s
+    When EV switch to B ... passed in 5.190s
+    Then the EVSE should switch to state B ... failed in 13.020s
+
+@scenario.end
+--------------------------------------------------------------------------------
+
+Captured stdout:
+None
+
+]]>
+</system-out></testcase><testcase classname="integration.Integration Tests" name="Test shorted diode" status="failed" time="27.806822"><failure type="AssertionError" message="">
+<![CDATA[
+Failing step: Then the EVSE should switch to state F ... failed in 13.021s
+Location: integration.feature:26
+Traceback (most recent call last):
+  File "/home/jenkins/.local/lib/python3.9/site-packages/behave/model.py", line 1329, in run
+    match.run(runner.context)
+  File "/home/jenkins/.local/lib/python3.9/site-packages/behave/matchers.py", line 98, in run
+    self.func(context, *args, **kwargs)
+  File "steps/step_state.py", line 87, in step_the_EVSE_should_switch_to_state
+    assert result is not None
+AssertionError
+
+Captured stdout:
+None]]>
+</failure><system-out>
+<![CDATA[
+@scenario.begin
+  Scenario: Test shorted diode
+    Given reset to state A ... passed in 3.184s
+    And the current state is B ... passed in 5.190s
+    When trigger fault shorted diode ... passed in 1.221s
+    And the current state is C ... passed in 5.190s
+    Then the EVSE should switch to state F ... failed in 13.021s
+    And vendor error code should be OcuErrorNegativeCP ... skipped in 0.000s
+    And wait for 10 ... skipped in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+
+Captured stdout:
+None
+
+]]>
+</system-out></testcase><testcase classname="integration.Integration Tests" name="Test residue current" status="failed" time="27.596116"><failure type="AssertionError" message="">
+<![CDATA[
+Failing step: Then the EVSE should switch to state F ... failed in 13.022s
+Location: integration.feature:35
+Traceback (most recent call last):
+  File "/home/jenkins/.local/lib/python3.9/site-packages/behave/model.py", line 1329, in run
+    match.run(runner.context)
+  File "/home/jenkins/.local/lib/python3.9/site-packages/behave/matchers.py", line 98, in run
+    self.func(context, *args, **kwargs)
+  File "steps/step_state.py", line 87, in step_the_EVSE_should_switch_to_state
+    assert result is not None
+AssertionError
+
+Captured stdout:
+None]]>
+</failure><system-out>
+<![CDATA[
+@scenario.begin
+  Scenario: Test residue current
+    Given reset to state A ... passed in 3.186s
+    And the current state is C ... passed in 5.205s
+    When trigger fault residue current ... passed in 1.181s
+    And wait for 5 ... passed in 5.002s
+    Then the EVSE should switch to state F ... failed in 13.022s
+    And vendor error code should be OcuErrorRCMDC ... skipped in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+
+Captured stdout:
+None
+
+]]>
+</system-out></testcase><testcase classname="integration.Integration Tests" name="Test contactor welded close" status="failed" time="47.41827"><failure type="AssertionError" message="">
+<![CDATA[
+Failing step: Then the EVSE should switch to state F ... failed in 13.011s
+Location: integration.feature:42
+Traceback (most recent call last):
+  File "/home/jenkins/.local/lib/python3.9/site-packages/behave/model.py", line 1329, in run
+    match.run(runner.context)
+  File "/home/jenkins/.local/lib/python3.9/site-packages/behave/matchers.py", line 98, in run
+    self.func(context, *args, **kwargs)
+  File "steps/step_state.py", line 87, in step_the_EVSE_should_switch_to_state
+    assert result is not None
+AssertionError
+
+Captured stdout:
+None]]>
+</failure><system-out>
+<![CDATA[
+@scenario.begin
+  Scenario: Test contactor welded close
+    Given reset to state A ... passed in 3.195s
+    When trigger fault contactor welded close ... passed in 1.181s
+    And wait for 30 ... passed in 30.031s
+    Then the EVSE should switch to state F ... failed in 13.011s
+
+@scenario.end
+--------------------------------------------------------------------------------
+
+Captured stdout:
+None
+
+]]>
+</system-out></testcase></testsuite>

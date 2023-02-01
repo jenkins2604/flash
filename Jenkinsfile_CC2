@@ -99,17 +99,19 @@ pipeline {
         stage('Run smoke test') {
             steps {
                 timeout(time: 500, unit: 'SECONDS') {
-                    script {
-                        sh './CC2/checkCS.sh'
+                    dir('CC2') {
+                        script {
+                        sh './checkCS.sh'
                         if (params.updateCCU == true) {
                             sh '''
-                            cd CC2/feature
+                            cd feature
                             behave -i smoke.feature --junit '''
                         }
                         else {
                             sh '''
-                            cd CC2/feature
+                            cd feature
                             behave -i smoke.feature --tags="not @ccu" --junit '''
+                        }
                         }
                     }
                 }
@@ -119,10 +121,9 @@ pipeline {
             steps {
                 echo 'RUN'
                 timeout(time: 500, unit: 'SECONDS') {
-                    sh '''#!/usr/bin/env bash
-                        cd CC2/feature
-                        behave -i integration.feature --junit
-                    '''
+                    dir('CC2/feature') {
+                    sh 'behave -i integration.feature --junit'
+                    }
                 }
             }
         }
