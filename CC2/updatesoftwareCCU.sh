@@ -5,6 +5,7 @@ then
 	echo "Required files are missing."
   exit 1
 fi
+python3 -m http.server 8000 &
 #loop until firmware installation is either finished or failed
 echo Update|nc -w 10 localhost 8001
 while true
